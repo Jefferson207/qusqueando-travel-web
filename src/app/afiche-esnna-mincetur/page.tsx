@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import { LegalPage } from "@/components/legal/legal-page";
 import { legalPages } from "@/lib/legal";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
+  path: "/afiche-esnna-mincetur",
   title: "Afiche ESNNA MINCETUR",
   description: legalPages.esnna.description,
-};
+});
 
 export default function EsnnaPage() {
   return (

@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { ClaimsForm, ClaimsHeader } from "@/components/claims-form";
 import { siteConfig } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
+  path: "/libro-de-reclamaciones",
   title: "Libro de Reclamaciones",
   description: "Formulario virtual del Libro de Reclamaciones de Qusqueando Travel.",
-};
+});
 
 export default function ClaimsBookPage() {
   return (

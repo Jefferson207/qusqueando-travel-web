@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
 import { Compass, Eye, Sparkles } from "lucide-react";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
+  path: "/nosotros",
   title: "Nosotros",
   description: "Historia, misión y visión de Qusqueando Travel.",
-};
+});
 
 const blocks = [
   {

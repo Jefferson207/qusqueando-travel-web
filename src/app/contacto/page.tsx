@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
 import { siteConfig, whatsappUrl } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
+  path: "/contacto",
   title: "Contacto",
   description: "Contacta a Qusqueando Travel por WhatsApp, correo o formulario.",
-};
+});
 
 export default function ContactPage() {
   return (

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { FloatingWhatsappChat } from "@/components/floating-whatsapp-chat";
 import { Navbar } from "@/components/navbar";
+import { siteUrl, siteSchema } from "@/lib/seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://qusqueandotravel.com"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Qusqueando Travel | Experiencias culturales en Perú",
     template: "%s | Qusqueando Travel",
@@ -43,6 +44,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-white text-[#101828]">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema).replace(/</g, "\\u003c") }} />
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

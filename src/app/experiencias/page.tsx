@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { ExperienceFilters } from "@/components/experience-filters";
 import { getCategories, getExperiences } from "@/lib/store";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
+  path: "/experiencias",
   title: "Experiencias",
   description:
     "Explora experiencias culturales, de naturaleza y arqueoastronómicas en Perú.",
-};
+});
 
 export const dynamic = "force-dynamic";
 

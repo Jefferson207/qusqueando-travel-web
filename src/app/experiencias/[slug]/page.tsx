@@ -8,6 +8,7 @@ import { WhatsAppButton } from "@/components/whatsapp-button";
 import { experiences as seedExperiences, getRelatedExperiences } from "@/lib/data";
 import { getExperience, getExperiences } from "@/lib/store";
 import { formatCurrency } from "@/lib/utils";
+import { experienceMetadata, experienceSchema } from "@/lib/seo";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -22,18 +23,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const experience = await getExperience(slug);
 
   if (!experience) {
-    return {};
+    return { title: "Experiencia no encontrada", robots: { index: false, follow: true } };
   }
 
-  return {
-    title: experience.seoTitle,
-    description: experience.seoDescription,
-    openGraph: {
-      title: experience.seoTitle,
-      description: experience.seoDescription,
-      images: [{ url: experience.mainImage }],
-    },
-  };
+  return experienceMetadata(experience);
 }
 
 export const dynamic = "force-dynamic";
@@ -55,6 +48,7 @@ export default async function ExperienceDetailPage({ params }: PageProps) {
 
   return (
     <article className="bg-[#f7f4ee]">
+      {experience.status === "ACTIVE" && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(experienceSchema(experience)).replace(/</g, "\\u003c") }} />}
       <section className="relative overflow-hidden pb-12 pt-10">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_8%,rgba(214,168,79,0.16),transparent_30%),radial-gradient(circle_at_86%_22%,rgba(16,24,40,0.10),transparent_24%)]" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

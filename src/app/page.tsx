@@ -7,6 +7,9 @@ import { MotionSection } from "@/components/motion-section";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { buttonClassName } from "@/components/ui/button";
 import { getExperiences, getSiteConfig } from "@/lib/store";
+import { homeMetadata } from "@/lib/seo";
+
+export const metadata = homeMetadata;
 
 const benefits = [
   { title: "Guías especializados", icon: Telescope },

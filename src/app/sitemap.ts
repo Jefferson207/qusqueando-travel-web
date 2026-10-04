@@ -1,28 +1,13 @@
 import type { MetadataRoute } from "next";
 import { getExperiences } from "@/lib/store";
+import { publicPaths, siteUrl } from "@/lib/seo";
 
-const baseUrl = "https://qusqueandotravel.com";
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const experiences = await getExperiences();
-
-  return [
-    "",
-    "/nosotros",
-    "/experiencias",
-    "/contacto",
-    "/politica-de-privacidad",
-    "/politica-de-proteccion-de-datos-personales",
-    "/terminos-y-condiciones",
-    "/medios-de-pago",
-    "/politica-de-cookies",
-    "/afiche-esnna-mincetur",
-    "/libro-de-reclamaciones",
-    ...experiences.map((experience) => `/experiencias/${experience.slug}`),
-  ].map((path) => ({
-    url: `${baseUrl}${path}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: path === "" ? 1 : 0.8,
-  }));
+  const paths = [...publicPaths, ...experiences
+    .filter((experience) => experience.status === "ACTIVE")
+    .map((experience) => `/experiencias/${encodeURIComponent(experience.slug)}`)];
+  return [...new Set(paths)].map((path) => ({ url: `${siteUrl}${path}` }));
 }

@@ -4,6 +4,7 @@ import { Footer } from "@/components/footer";
 import { FloatingWhatsappChat } from "@/components/floating-whatsapp-chat";
 import { Navbar } from "@/components/navbar";
 import { SiteConfigProvider } from "@/components/site-config-provider";
+import { WhatsappDesktopLinks } from "@/components/whatsapp-desktop-links";
 import { siteUrl, siteSchema } from "@/lib/seo";
 import { getSiteConfig } from "@/lib/store";
 import "./globals.css";
@@ -54,6 +55,7 @@ export default async function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
           <FloatingWhatsappChat />
+          <WhatsappDesktopLinks />
         </SiteConfigProvider>
       </body>
     </html>

@@ -71,8 +71,20 @@ export const whatsappMessages = {
     ].join("\n"),
 };
 
+// Se usa api.whatsapp.com/send en lugar de wa.me: la redirección de wa.me
+// corrompe los emojis (aparecen como �). En escritorio, WhatsappDesktopLinks
+// cambia estos enlaces por web.whatsapp.com.
+const whatsappApiUrl = "https://api.whatsapp.com/send";
+const whatsappWebUrl = "https://web.whatsapp.com/send";
+
 export function whatsappMessageUrl(phone: string, message: string) {
-  return `https://wa.me/${phone.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
+  const params = new URLSearchParams({ phone: phone.replace(/\D/g, ""), text: message });
+  return `${whatsappApiUrl}?${params.toString().replace(/\+/g, "%20")}`;
+}
+
+export function toWhatsappWebUrl(href: string) {
+  if (!href.startsWith(whatsappApiUrl)) return null;
+  return whatsappWebUrl + href.slice(whatsappApiUrl.length);
 }
 
 export function whatsappUrl(phone: string, experienceName?: string, experienceSlug?: string) {

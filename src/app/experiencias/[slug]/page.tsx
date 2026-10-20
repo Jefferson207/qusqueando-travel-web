@@ -149,7 +149,7 @@ export default async function ExperienceDetailPage({ params }: PageProps) {
               </p>
             </div>
           </div>
-          <WhatsAppButton experienceName={experience.name} className="mt-7 w-full" />
+          <WhatsAppButton experienceName={experience.name} experienceSlug={experience.slug} className="mt-7 w-full" />
           <p className="mt-4 text-xs leading-5 text-[#667085]">
             Respuesta directa por WhatsApp para confirmar disponibilidad, horarios y modalidad.
           </p>

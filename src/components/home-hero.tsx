@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowDown, Stars } from "lucide-react";
+import { ArrowDown } from "lucide-react";
+import { IntiSun } from "@/components/icons/inti-sun";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { buttonClassName } from "@/components/ui/button";
 import type { StoredSiteConfig } from "@/lib/store";
@@ -39,7 +40,7 @@ export function HomeHero({ config }: { config: StoredSiteConfig }) {
             transition={{ duration: 0.65, ease: "easeOut" }}
             className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-[#f3c77a] shadow-[0_12px_34px_rgba(0,0,0,0.18)] backdrop-blur"
           >
-            <Stars className="h-4 w-4" />
+            <IntiSun className="h-4 w-4" />
             Cultura, naturaleza y astronomía andina
           </motion.div>
           <motion.h1

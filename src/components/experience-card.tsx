@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Clock, MapPin, Sparkles, Tag } from "lucide-react";
+import { ArrowUpRight, Clock, MapPin, Tag } from "lucide-react";
+import { IntiSun } from "@/components/icons/inti-sun";
 import { motion } from "framer-motion";
 import type { Experience } from "@/lib/data";
 import { formatCurrency } from "@/lib/utils";
@@ -33,7 +34,7 @@ export function ExperienceCard({ experience }: { experience: Experience }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#021623]/70 via-transparent to-transparent" />
         <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#021623] shadow-sm backdrop-blur">
-          <Sparkles className="h-3.5 w-3.5 text-[#b97a0b]" />
+          <IntiSun className="h-3.5 w-3.5 text-[#b97a0b]" />
           {experience.category}
         </span>
         <span className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-[#021623]/82 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">

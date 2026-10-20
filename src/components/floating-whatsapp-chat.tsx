@@ -4,21 +4,20 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Headphones, Info, MapPinned, MessageCircle, UserRound, X } from "lucide-react";
 import { useSiteConfig } from "@/components/site-config-provider";
-import { whatsappMessageUrl } from "@/lib/site";
+import { whatsappMessages, whatsappMessageUrl } from "@/lib/site";
 
 const options = [
   {
     label: "Deseo información",
     description: "Conocer tours, precios y disponibilidad.",
     icon: Info,
-    message: "Hola, deseo información sobre las experiencias de Qusqueando Travel.",
+    message: whatsappMessages.general(),
   },
   {
     label: "Planear mi viaje a Cusco",
     description: "Armar una ruta según mis fechas e intereses.",
     icon: MapPinned,
-    message:
-      "Hola, quiero planear mi próximo viaje a Cusco. Me gustaría recibir ayuda con rutas, fechas y experiencias recomendadas.",
+    message: whatsappMessages.planTrip(),
   },
 ];
 

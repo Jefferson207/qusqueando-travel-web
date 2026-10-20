@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { buttonClassName } from "@/components/ui/button";
 import { useSiteConfig } from "@/components/site-config-provider";
-import { whatsappMessageUrl } from "@/lib/site";
+import { siteDomain, whatsappMessageUrl } from "@/lib/site";
 
 const initialForm = {
   name: "",
@@ -18,13 +18,20 @@ export function ContactForm() {
   const [form, setForm] = useState(initialForm);
 
   const whatsappHref = useMemo(() => {
+    const name = form.name.trim();
     const lines = [
-      `Hola, soy ${form.name || "un viajero"}.`,
-      "Quiero planificar una experiencia con Qusqueando Travel.",
-      form.phone ? `Teléfono: ${form.phone}` : null,
-      form.email ? `Correo: ${form.email}` : null,
-      form.message ? `Mensaje: ${form.message}` : null,
-    ].filter(Boolean);
+      `¡Hola, *Qusqueando Travel*! 👋 Soy *${name || "un viajero"}*.`,
+      "",
+      "Quiero *planificar una experiencia* con ustedes 🏔️",
+      "",
+      "📝 *Mis datos de contacto:*",
+      `👤 Nombre: ${name || "—"}`,
+      form.phone.trim() ? `📱 Teléfono: ${form.phone.trim()}` : null,
+      form.email.trim() ? `✉️ Correo: ${form.email.trim()}` : null,
+      ...(form.message.trim() ? ["", "💬 *Mensaje:*", form.message.trim()] : []),
+      "",
+      `🌐 _Enviado desde el formulario de contacto de ${siteDomain}_`,
+    ].filter((line) => line !== null);
 
     return whatsappMessageUrl(siteConfig.whatsapp, lines.join("\n"));
   }, [form, siteConfig.whatsapp]);

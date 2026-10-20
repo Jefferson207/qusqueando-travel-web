@@ -19,8 +19,8 @@ export default function EsnnaPage() {
             <Image
               src="/esnna.png"
               alt="Afiche ESNNA MINCETUR"
-              width={1200}
-              height={1600}
+              width={1054}
+              height={1492}
               className="surface-content h-auto w-full rounded-2xl"
               priority
             />

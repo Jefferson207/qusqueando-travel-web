@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ExternalLink, Mail, MapPin, Phone, Share2 } from "lucide-react";
+import { EsnnaModalLink } from "@/components/esnna-modal-link";
 import { whatsappUrl } from "@/lib/site";
 import { getSiteConfig } from "@/lib/store";
 
@@ -61,11 +62,15 @@ export async function Footer() {
         <div>
           <h2 className="text-sm font-semibold text-[#d4952a]">Legal y seguridad</h2>
           <div className="mt-4 grid gap-3 text-sm text-[#d0d5dd]">
-            {legalLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="leading-5 transition hover:text-white">
-                {link.label}
-              </Link>
-            ))}
+            {legalLinks.map((link) =>
+              link.href === "/afiche-esnna-mincetur" ? (
+                <EsnnaModalLink key={link.href} label={link.label} className="leading-5 transition hover:text-white" />
+              ) : (
+                <Link key={link.href} href={link.href} className="leading-5 transition hover:text-white">
+                  {link.label}
+                </Link>
+              ),
+            )}
           </div>
         </div>
         <div>

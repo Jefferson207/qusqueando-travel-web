@@ -1,6 +1,7 @@
 import { pageMetadata } from "@/lib/seo";
 import Image from "next/image";
-import { Compass, Eye, Sparkles } from "lucide-react";
+import { Compass, Eye } from "lucide-react";
+import { IntiSun } from "@/components/icons/inti-sun";
 
 export const metadata = pageMetadata({
   path: "/nosotros",
@@ -17,7 +18,7 @@ const blocks = [
   },
   {
     title: "Misión",
-    icon: Sparkles,
+    icon: IntiSun,
     content:
       "Ofrecer experiencias auténticas que conecten a las personas con la cultura andina, el patrimonio arqueológico y la observación de fenómenos astronómicos, promoviendo un turismo responsable y de calidad.",
   },

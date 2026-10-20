@@ -17,14 +17,68 @@ export const siteConfig = {
 
 export type SiteConfig = typeof siteConfig;
 
+export const siteDomain = "qusqueandotravel.com";
+
+// Mensajes prellenados de WhatsApp. WhatsApp muestra *texto* en negrita y
+// _texto_ en cursiva. La firma final indica que el contacto viene de la web.
+const webSignature = `🌐 _Mensaje enviado desde la web ${siteDomain}_`;
+
+export const whatsappMessages = {
+  general: () =>
+    [
+      "¡Hola, *Qusqueando Travel*! 👋",
+      "",
+      "Me gustaría recibir *información* sobre sus tours y experiencias en Perú 🏔️",
+      "",
+      "📋 Me interesa conocer:",
+      "• Tours disponibles y *precios* 💰",
+      "• *Disponibilidad* de fechas 📅",
+      "",
+      "¡Muchas gracias! 🙌",
+      "",
+      webSignature,
+    ].join("\n"),
+
+  planTrip: () =>
+    [
+      "¡Hola, *Qusqueando Travel*! 👋",
+      "",
+      "Quiero *planear mi viaje a Cusco* ✈️🏔️",
+      "",
+      "Me gustaría recibir ayuda con:",
+      "🗺️ Rutas y experiencias recomendadas",
+      "📅 Fechas y duración del viaje",
+      "🏛️ Cultura, naturaleza y astronomía andina",
+      "",
+      "¿Me ayudan a armar mi itinerario? 😊",
+      "",
+      webSignature,
+    ].join("\n"),
+
+  experience: (name: string, slug?: string) =>
+    [
+      "¡Hola, *Qusqueando Travel*! 👋",
+      "",
+      `Me interesa reservar: *${name}* 🏔️`,
+      "",
+      "¿Me podrían confirmar?",
+      "📅 *Disponibilidad* de fechas",
+      "💰 *Precio* por persona",
+      "👥 Opciones privada o compartida",
+      ...(slug ? ["", `🔗 https://${siteDomain}/experiencias/${slug}`] : []),
+      "",
+      webSignature,
+    ].join("\n"),
+};
+
 export function whatsappMessageUrl(phone: string, message: string) {
   return `https://wa.me/${phone.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
 }
 
-export function whatsappUrl(phone: string, experienceName?: string) {
+export function whatsappUrl(phone: string, experienceName?: string, experienceSlug?: string) {
   const message = experienceName
-    ? `Hola, quiero información sobre el paquete ${experienceName} de Qusqueando Travel.`
-    : "Hola, quiero información sobre las experiencias de Qusqueando Travel.";
+    ? whatsappMessages.experience(experienceName, experienceSlug)
+    : whatsappMessages.general();
 
   return whatsappMessageUrl(phone, message);
 }

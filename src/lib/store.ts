@@ -1,32 +1,48 @@
 import "server-only";
 
+import { unstable_rethrow } from "next/navigation";
+
 import type { Category, Experience } from "@/lib/data";
 import { categories as seedCategories, experiences as seedExperiences } from "@/lib/data";
 import { redis, redisKeys } from "@/lib/redis";
-import { siteConfig } from "@/lib/site";
+import { siteConfig, type SiteConfig } from "@/lib/site";
 
-export type StoredSiteConfig = typeof siteConfig;
+export type StoredSiteConfig = SiteConfig;
+
+async function isSeeded() {
+  return Boolean(await redis.exists(redisKeys.seeded));
+}
 
 export async function getExperiences() {
   try {
     const slugs = await redis.smembers<string[]>(redisKeys.experiencesIndex);
-    if (!slugs.length) return seedExperiences;
+    if (!slugs.length) return (await isSeeded()) ? [] : seedExperiences;
 
-    const rows = await redis.mget<Experience[]>(
+    const rows = await redis.mget<(Experience | null)[]>(
       ...slugs.map((slug) => redisKeys.experience(slug)),
     );
 
-    return rows.filter(Boolean).sort((a, b) => a.order - b.order);
-  } catch {
+    return rows.filter((row): row is Experience => Boolean(row)).sort((a, b) => a.order - b.order);
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("[store] No se pudo leer experiencias de Redis, usando datos de ejemplo", error);
     return seedExperiences;
   }
+}
+
+export async function getPublicExperiences() {
+  return (await getExperiences()).filter((experience) => experience.status === "ACTIVE");
 }
 
 export async function getExperience(slug: string) {
   try {
     const row = await redis.get<Experience>(redisKeys.experience(slug));
     if (row) return row;
-  } catch {}
+    if (await isSeeded()) return undefined;
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error(`[store] No se pudo leer la experiencia "${slug}" de Redis`, error);
+  }
 
   return seedExperiences.find((experience) => experience.slug === slug);
 }
@@ -44,14 +60,18 @@ export async function deleteExperience(slug: string) {
 export async function getCategories() {
   try {
     const slugs = await redis.smembers<string[]>(redisKeys.categoriesIndex);
-    if (!slugs.length) return seedCategories;
+    if (!slugs.length) return (await isSeeded()) ? [] : seedCategories;
 
-    const rows = await redis.mget<Category[]>(
+    const rows = await redis.mget<(Category | null)[]>(
       ...slugs.map((slug) => redisKeys.category(slug)),
     );
 
-    return rows.filter(Boolean);
-  } catch {
+    return rows
+      .filter((row): row is Category => Boolean(row))
+      .sort((a, b) => a.name.localeCompare(b.name, "es"));
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("[store] No se pudo leer categorías de Redis, usando datos de ejemplo", error);
     return seedCategories;
   }
 }
@@ -66,19 +86,28 @@ export async function deleteCategory(slug: string) {
   await redis.srem(redisKeys.categoriesIndex, slug);
 }
 
-export async function getSiteConfig() {
+export async function getSiteConfig(): Promise<SiteConfig> {
   try {
-    return (await redis.get<StoredSiteConfig>(redisKeys.siteConfig)) ?? siteConfig;
-  } catch {
+    const stored = await redis.get<Partial<SiteConfig>>(redisKeys.siteConfig);
+    return {
+      ...siteConfig,
+      ...stored,
+      socials: { ...siteConfig.socials, ...stored?.socials },
+    };
+  } catch (error) {
+    unstable_rethrow(error);
+    console.error("[store] No se pudo leer la configuración de Redis", error);
     return siteConfig;
   }
 }
 
-export async function saveSiteConfig(config: StoredSiteConfig) {
+export async function saveSiteConfig(config: SiteConfig) {
   await redis.set(redisKeys.siteConfig, config);
 }
 
 export async function seedRedisIfEmpty() {
+  if (await isSeeded()) return;
+
   const experienceSlugs = await redis.smembers<string[]>(redisKeys.experiencesIndex);
   if (!experienceSlugs.length) {
     await Promise.all(seedExperiences.map((experience) => saveExperience(experience)));
@@ -93,4 +122,6 @@ export async function seedRedisIfEmpty() {
   if (!config) {
     await saveSiteConfig(siteConfig);
   }
+
+  await redis.set(redisKeys.seeded, Date.now());
 }

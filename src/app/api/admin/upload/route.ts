@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 
+const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
+const maxBytes = 5 * 1024 * 1024;
+
 export async function POST(request: Request) {
   if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -14,11 +17,21 @@ export async function POST(request: Request) {
   }
 
   const incoming = await request.formData();
-  const outgoing = new FormData();
+  const file = incoming.get("file");
 
-  for (const [key, value] of incoming.entries()) {
-    outgoing.append(key, value);
+  if (!(file instanceof File)) {
+    return NextResponse.json({ error: "Falta el archivo (campo 'file')" }, { status: 400 });
   }
+  if (!allowedTypes.includes(file.type)) {
+    return NextResponse.json({ error: "Formato no permitido. Usa JPG, PNG, WebP o AVIF." }, { status: 415 });
+  }
+  if (file.size > maxBytes) {
+    return NextResponse.json({ error: "La imagen supera los 5 MB." }, { status: 413 });
+  }
+
+  // Solo se reenvía el archivo y el token del servidor, nunca otros campos del cliente.
+  const outgoing = new FormData();
+  outgoing.append("file", file);
   outgoing.append("token", token);
 
   const response = await fetch(uploadUrl, {

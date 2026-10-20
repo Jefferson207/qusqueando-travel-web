@@ -1,17 +1,9 @@
 import type { NextConfig } from "next";
+import { imageHosts } from "./src/lib/image-hosts";
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-      },
-    ],
+    remotePatterns: imageHosts.map((hostname) => ({ protocol: "https", hostname })),
   },
 };
 

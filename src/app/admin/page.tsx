@@ -14,7 +14,7 @@ export default async function AdminPage() {
     <AdminShell>
       <section>
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold text-[#101828]">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-[#021623]">Dashboard</h1>
         <form action={logoutAdmin}>
           <button className="rounded-full border border-[#d0d5dd] bg-white px-4 py-2 text-sm font-semibold text-[#344054] shadow-sm transition hover:bg-[#f6f7f9]">
             Cerrar sesión
@@ -35,7 +35,7 @@ function Metric({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-[24px] border border-[#e4e7ec] bg-white p-6 shadow-sm">
       <p className="text-sm text-[#667085]">{label}</p>
-      <p className="mt-3 text-4xl font-bold text-[#101828]">{value}</p>
+      <p className="mt-3 text-4xl font-bold text-[#021623]">{value}</p>
     </div>
   );
 }

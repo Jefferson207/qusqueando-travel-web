@@ -3,9 +3,7 @@
 import type { FormEvent } from "react";
 import { BookOpen, FileText, Send, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { siteConfig as staticSiteConfig } from "@/lib/site";
-
-type SiteConfig = typeof staticSiteConfig;
+import type { SiteConfig } from "@/lib/site";
 
 type FormElement = HTMLFormElement & {
   incidentAt: HTMLInputElement;
@@ -162,12 +160,12 @@ export function ClaimsHeader({ siteName }: { siteName: string }) {
       <div className="surface-content flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="eyebrow">Legal y seguridad</p>
-          <h1 className="mt-2 text-3xl font-bold text-[#101828] sm:text-4xl">Libro de Reclamaciones</h1>
+          <h1 className="mt-2 text-3xl font-bold text-[#021623] sm:text-4xl">Libro de Reclamaciones</h1>
           <p className="mt-3 text-[#667085]">
             Registra una queja o reclamo relacionado con los servicios de {siteName}.
           </p>
         </div>
-        <BookOpen className="h-12 w-12 text-[#b8872d]" />
+        <BookOpen className="h-12 w-12 text-[#b97a0b]" />
       </div>
     </div>
   );
@@ -187,7 +185,7 @@ function ClaimsSection({
   return (
     <section className="surface-card p-6 sm:p-8">
       <div className="surface-content mb-6 flex items-start gap-3">
-        <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#fff6df] text-[#b8872d]">
+        <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#fdf0dc] text-[#b97a0b]">
           {icon}
         </span>
         <div>

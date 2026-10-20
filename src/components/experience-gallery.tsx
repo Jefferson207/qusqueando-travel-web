@@ -20,7 +20,7 @@ export function ExperienceGallery({
         <button
           type="button"
           onClick={() => setActive(main)}
-          className="group relative min-h-[360px] overflow-hidden rounded-[28px] shadow-[0_24px_70px_rgba(16,24,40,0.16)] sm:min-h-[540px]"
+          className="group relative min-h-[360px] overflow-hidden rounded-[28px] shadow-[0_24px_70px_rgba(2,22,35,0.16)] sm:min-h-[540px]"
         >
           <Image
             src={main}
@@ -30,7 +30,7 @@ export function ExperienceGallery({
             sizes="(min-width: 1024px) 60vw, 100vw"
             className="object-cover transition duration-700 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#101828]/35 to-transparent opacity-70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#021623]/35 to-transparent opacity-70" />
         </button>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
           {images.slice(1, 3).map((image, index) => (
@@ -38,7 +38,7 @@ export function ExperienceGallery({
               type="button"
               key={image}
               onClick={() => setActive(image)}
-              className="group relative min-h-[240px] overflow-hidden rounded-[24px] shadow-[0_18px_48px_rgba(16,24,40,0.12)]"
+              className="group relative min-h-[240px] overflow-hidden rounded-[24px] shadow-[0_18px_48px_rgba(2,22,35,0.12)]"
             >
               <Image
                 src={image}
@@ -65,11 +65,11 @@ export function ExperienceGallery({
       </div>
 
       {active ? (
-        <div className="fixed inset-0 z-[80] bg-[#101828]/90 p-4 backdrop-blur-sm" role="dialog">
+        <div className="fixed inset-0 z-[80] bg-[#021623]/90 p-4 backdrop-blur-sm" role="dialog">
           <button
             type="button"
             onClick={() => setActive(null)}
-            className="absolute right-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#101828] shadow-lg transition hover:scale-105"
+            className="absolute right-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#021623] shadow-lg transition hover:scale-105"
             aria-label="Cerrar galería"
           >
             <X className="h-5 w-5" />

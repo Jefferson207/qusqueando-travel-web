@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AdminShell } from "@/components/admin/admin-shell";
+import { AdminNotice, AdminShell } from "@/components/admin/admin-shell";
 import { ExperienceForm } from "@/components/admin/experience-form";
 import { removeExperience } from "@/app/admin/actions";
 import { buttonClassName } from "@/components/ui/button";
@@ -10,10 +10,10 @@ import { formatCurrency } from "@/lib/utils";
 export default async function AdminExperiencesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ edit?: string }>;
+  searchParams: Promise<{ edit?: string; error?: string; saved?: string }>;
 }) {
   await requireAdmin();
-  const [{ edit }, experiences, categories] = await Promise.all([
+  const [{ edit, error, saved }, experiences, categories] = await Promise.all([
     searchParams,
     getExperiences(),
     getCategories(),
@@ -25,11 +25,12 @@ export default async function AdminExperiencesPage({
       <section>
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold text-[#101828]">Experiencias</h1>
+          <h1 className="text-3xl font-bold text-[#021623]">Experiencias</h1>
           <p className="mt-2 text-[#667085]">CRUD central para tours, paquetes, privados y personalizados.</p>
         </div>
         <Link href="/experiencias" className={buttonClassName("outline")}>Ver catálogo</Link>
       </div>
+      <AdminNotice error={error} saved={saved} />
       <div className="mt-6 overflow-x-auto rounded-[24px] border border-[#e4e7ec] bg-white shadow-sm">
         <table className="w-full min-w-[860px] text-left text-sm">
           <thead className="bg-[#f9fafb] text-[#667085]">
@@ -45,15 +46,18 @@ export default async function AdminExperiencesPage({
           <tbody className="divide-y divide-[#e4e7ec]">
             {experiences.map((experience) => (
               <tr key={experience.id}>
-                <td className="px-4 py-3 font-medium text-[#101828]">{experience.name}</td>
+                <td className="px-4 py-3 font-medium text-[#021623]">{experience.name}</td>
                 <td className="px-4 py-3 text-[#475467]">{experience.category}</td>
                 <td className="px-4 py-3 text-[#475467]">{formatCurrency(experience.priceFrom, experience.currency)}</td>
-                <td className="px-4 py-3 text-[#475467]">{experience.status}</td>
+                <td className="px-4 py-3 text-[#475467]">{experience.status === "ACTIVE" ? "Activo" : "Borrador"}</td>
                 <td className="px-4 py-3 text-[#475467]">{experience.featured ? "Sí" : "No"}</td>
                 <td className="px-4 py-3">
                   <div className="flex gap-2">
-                    <Link className="rounded-full border border-[#d0d5dd] px-3 py-1.5 font-semibold text-[#344054]" href={`/admin/experiencias?edit=${experience.slug}`}>
+                    <Link className="rounded-full border border-[#d0d5dd] px-3 py-1.5 font-semibold text-[#344054]" href={`/admin/experiencias?edit=${encodeURIComponent(experience.slug)}#formulario`}>
                       Editar
+                    </Link>
+                    <Link className="rounded-full border border-[#d0d5dd] px-3 py-1.5 font-semibold text-[#344054]" href={`/experiencias/${encodeURIComponent(experience.slug)}`} target="_blank">
+                      {experience.status === "ACTIVE" ? "Ver" : "Vista previa"}
                     </Link>
                     <form action={removeExperience}>
                       <input type="hidden" name="slug" value={experience.slug} />
@@ -68,8 +72,8 @@ export default async function AdminExperiencesPage({
           </tbody>
         </table>
       </div>
-      <div className="mt-8">
-        <ExperienceForm experience={editing} categories={categories} />
+      <div id="formulario" className="mt-8 scroll-mt-24">
+        <ExperienceForm key={editing?.slug ?? "nueva"} experience={editing} categories={categories} />
       </div>
       </section>
     </AdminShell>

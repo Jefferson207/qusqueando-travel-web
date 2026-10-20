@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { Experience } from "@/lib/data";
-import { siteConfig } from "@/lib/site";
+import { siteConfig, type SiteConfig } from "@/lib/site";
 
 export const siteUrl = "https://qusqueandotravel.com";
 export const publicPaths = ["/", "/nosotros", "/experiencias", "/contacto", "/politica-de-privacidad", "/politica-de-proteccion-de-datos-personales", "/terminos-y-condiciones", "/medios-de-pago", "/politica-de-cookies", "/afiche-esnna-mincetur", "/libro-de-reclamaciones"];
@@ -50,16 +50,18 @@ export function experienceSchema(experience: Experience) {
   };
 }
 
-export const siteSchema = {
-  "@context": "https://schema.org",
-  "@graph": [
-    { "@type": "TravelAgency", "@id": `${siteUrl}/#agency`, name: siteConfig.name, url: `${siteUrl}/`,
-      telephone: siteConfig.whatsapp, email: siteConfig.email, image: siteConfig.heroImage,
-      address: { "@type": "PostalAddress", addressLocality: "Cusco", addressCountry: "PE" },
-      sameAs: [siteConfig.socials.facebook, siteConfig.socials.instagram],
-    },
-    { "@type": "WebSite", "@id": `${siteUrl}/#website`, name: siteConfig.name, url: `${siteUrl}/`,
-      inLanguage: "es-PE", publisher: { "@id": `${siteUrl}/#agency` },
-    },
-  ],
-};
+export function siteSchema(config: SiteConfig = siteConfig) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "TravelAgency", "@id": `${siteUrl}/#agency`, name: config.name, url: `${siteUrl}/`,
+        telephone: config.whatsapp, email: config.email, image: config.heroImage, logo: `${siteUrl}/logo.png`,
+        address: { "@type": "PostalAddress", addressLocality: "Cusco", addressCountry: "PE" },
+        sameAs: [config.socials.facebook, config.socials.instagram],
+      },
+      { "@type": "WebSite", "@id": `${siteUrl}/#website`, name: config.name, url: `${siteUrl}/`,
+        inLanguage: "es-PE", publisher: { "@id": `${siteUrl}/#agency` },
+      },
+    ],
+  };
+}

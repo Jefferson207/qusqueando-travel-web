@@ -16,11 +16,11 @@ export function ExperienceCard({ experience }: { experience: Experience }) {
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, ease: "easeOut" }}
       whileHover={{ y: -8 }}
-      className="surface-card group p-3 transition-shadow duration-500 hover:shadow-[0_28px_80px_rgba(16,24,40,0.16)]"
+      className="surface-card group p-3 transition-shadow duration-500 hover:shadow-[0_28px_80px_rgba(2,22,35,0.16)]"
     >
       <div className="pointer-events-none absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100">
         <div className="absolute -left-24 top-10 h-40 w-40 rotate-12 bg-white/40 blur-2xl" />
-        <div className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-[#d6a84f]/70 to-transparent" />
+        <div className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-[#d4952a]/70 to-transparent" />
       </div>
 
       <div className="surface-content relative aspect-[4/3] overflow-hidden rounded-2xl">
@@ -31,21 +31,21 @@ export function ExperienceCard({ experience }: { experience: Experience }) {
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition duration-700 ease-out group-hover:scale-110"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#101828]/70 via-transparent to-transparent" />
-        <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#101828] shadow-sm backdrop-blur">
-          <Sparkles className="h-3.5 w-3.5 text-[#b8872d]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#021623]/70 via-transparent to-transparent" />
+        <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-white/90 px-3 py-1.5 text-xs font-semibold text-[#021623] shadow-sm backdrop-blur">
+          <Sparkles className="h-3.5 w-3.5 text-[#b97a0b]" />
           {experience.category}
         </span>
-        <span className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-[#101828]/82 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">
-          <Clock className="h-3.5 w-3.5 text-[#d6a84f]" />
+        <span className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-[#021623]/82 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">
+          <Clock className="h-3.5 w-3.5 text-[#d4952a]" />
           {experience.duration}
         </span>
       </div>
 
       <div className="surface-content p-4">
         <div className="flex items-start justify-between gap-4">
-          <h3 className="text-xl font-bold leading-tight text-[#101828]">{experience.name}</h3>
-          <span className="shrink-0 rounded-full bg-[#fff6df] px-3 py-1 text-sm font-bold text-[#8a621e]">
+          <h3 className="text-xl font-bold leading-tight text-[#021623]">{experience.name}</h3>
+          <span className="shrink-0 rounded-full bg-[#fdf0dc] px-3 py-1 text-sm font-bold text-[#8a5a08]">
             {formatCurrency(experience.priceFrom, experience.currency)}
           </span>
         </div>
@@ -54,10 +54,10 @@ export function ExperienceCard({ experience }: { experience: Experience }) {
         </p>
         <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-[#475467]">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f2f4f7] px-3 py-2">
-            <MapPin className="h-3.5 w-3.5 text-[#b8872d]" /> {experience.location}
+            <MapPin className="h-3.5 w-3.5 text-[#b97a0b]" /> {experience.location}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-[#f2f4f7] px-3 py-2">
-            <Tag className="h-3.5 w-3.5 text-[#b8872d]" /> Desde
+            <Tag className="h-3.5 w-3.5 text-[#b97a0b]" /> Desde
           </span>
         </div>
         <Link

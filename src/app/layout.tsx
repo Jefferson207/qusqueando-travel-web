@@ -3,7 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { FloatingWhatsappChat } from "@/components/floating-whatsapp-chat";
 import { Navbar } from "@/components/navbar";
+import { SiteConfigProvider } from "@/components/site-config-provider";
 import { siteUrl, siteSchema } from "@/lib/seo";
+import { getSiteConfig } from "@/lib/store";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,22 +35,26 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const siteConfig = await getSiteConfig();
+
   return (
     <html
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-white text-[#101828]">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema).replace(/</g, "\\u003c") }} />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <FloatingWhatsappChat />
+      <body className="flex min-h-full flex-col bg-white text-[#021623]">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema(siteConfig)).replace(/</g, "\\u003c") }} />
+        <SiteConfigProvider config={siteConfig}>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <FloatingWhatsappChat />
+        </SiteConfigProvider>
       </body>
     </html>
   );

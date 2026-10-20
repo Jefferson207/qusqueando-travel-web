@@ -143,14 +143,3 @@ export const experiences: Experience[] = [
   makeExperience(8, "Tour Privado", "Tours privados", "A medida", "Perú", 180),
   makeExperience(9, "Paquete Personalizado", "Personalizados", "Flexible", "Perú", 250),
 ];
-
-export function getExperienceBySlug(slug: string) {
-  return experiences.find((experience) => experience.slug === slug);
-}
-
-export function getRelatedExperiences(experience: Experience) {
-  return experiences
-    .filter((item) => item.slug !== experience.slug && item.category === experience.category)
-    .concat(experiences.filter((item) => item.slug !== experience.slug))
-    .slice(0, 3);
-}

@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { buttonClassName } from "@/components/ui/button";
-import { siteConfig } from "@/lib/site";
+import { useSiteConfig } from "@/components/site-config-provider";
+import { whatsappMessageUrl } from "@/lib/site";
 
 const initialForm = {
   name: "",
@@ -13,6 +14,7 @@ const initialForm = {
 };
 
 export function ContactForm() {
+  const siteConfig = useSiteConfig();
   const [form, setForm] = useState(initialForm);
 
   const whatsappHref = useMemo(() => {
@@ -24,8 +26,8 @@ export function ContactForm() {
       form.message ? `Mensaje: ${form.message}` : null,
     ].filter(Boolean);
 
-    return `https://wa.me/${siteConfig.whatsapp.replace("+", "")}?text=${encodeURIComponent(lines.join("\n"))}`;
-  }, [form]);
+    return whatsappMessageUrl(siteConfig.whatsapp, lines.join("\n"));
+  }, [form, siteConfig.whatsapp]);
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [field]: value }));

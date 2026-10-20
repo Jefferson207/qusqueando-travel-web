@@ -1,13 +1,15 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Compass, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { buttonClassName } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { siteConfig, whatsappUrl } from "@/lib/site";
+import { useSiteConfig } from "@/components/site-config-provider";
+import { whatsappUrl } from "@/lib/site";
 
 const navItems = [
   { href: "/", label: "Inicio" },
@@ -18,13 +20,14 @@ const navItems = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const siteConfig = useSiteConfig();
   const [isOpen, setIsOpen] = useState(false);
   const { scrollY } = useScroll();
-  const height = useTransform(scrollY, [0, 120], [74, 62]);
+  const height = useTransform(scrollY, [0, 120], [92, 76]);
   const shadow = useTransform(
     scrollY,
     [0, 120],
-    ["0 1px 0 rgba(255,255,255,0.60)", "0 14px 34px rgba(16,24,40,0.08)"],
+    ["0 1px 0 rgba(255,255,255,0.60)", "0 14px 34px rgba(2,22,35,0.08)"],
   );
 
   return (
@@ -37,11 +40,22 @@ export function Navbar() {
         className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
       >
         <Link href="/" className="group flex min-w-0 items-center gap-3" onClick={() => setIsOpen(false)}>
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#101828] text-[#d6a84f] shadow-[0_10px_26px_rgba(16,24,40,0.16)] transition duration-300 group-hover:-translate-y-0.5 group-hover:rotate-3">
-            <Compass className="h-5 w-5" />
-          </span>
-          <span className="truncate text-base font-bold tracking-[-0.01em] text-[#101828] sm:text-lg">
-            {siteConfig.name}
+          <Image
+            src="/logo-emblem.png"
+            alt=""
+            width={225}
+            height={160}
+            priority
+            className="h-14 w-auto shrink-0 object-contain sm:h-16 transition duration-300 group-hover:-translate-y-0.5"
+          />
+          <span className="flex min-w-0 flex-col leading-none">
+            <span className="truncate text-lg font-extrabold uppercase tracking-[0.04em] text-[#021623] sm:text-2xl">
+              Qusqueando
+            </span>
+            <span className="mt-1.5 text-[0.7rem] font-bold uppercase tracking-[0.5em] sm:text-xs text-[#b97a0b]">
+              Travel
+            </span>
+            <span className="sr-only">{siteConfig.name}</span>
           </span>
         </Link>
 
@@ -54,14 +68,14 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "group/link relative py-2 text-sm font-semibold transition duration-300 hover:text-[#101828]",
-                  active ? "text-[#101828]" : "text-[#475467]",
+                  "group/link relative py-2 text-sm font-semibold transition duration-300 hover:text-[#021623]",
+                  active ? "text-[#021623]" : "text-[#475467]",
                 )}
               >
                 {item.label}
                 <span
                   className={cn(
-                    "absolute inset-x-0 -bottom-0.5 h-0.5 origin-left rounded-full bg-[#d6a84f] transition-transform duration-300 group-hover/link:scale-x-100",
+                    "absolute inset-x-0 -bottom-0.5 h-0.5 origin-left rounded-full bg-[#d4952a] transition-transform duration-300 group-hover/link:scale-x-100",
                     active ? "scale-x-100" : "scale-x-0",
                   )}
                 />
@@ -72,7 +86,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <a
-            href={whatsappUrl()}
+            href={whatsappUrl(siteConfig.whatsapp)}
             target="_blank"
             rel="noreferrer"
             className={buttonClassName("primary", "hidden h-10 px-6 sm:inline-flex")}
@@ -95,7 +109,7 @@ export function Navbar() {
       {isOpen ? (
         <nav
           id="mobile-navigation"
-          className="border-t border-[#eaecf0] bg-white px-4 py-4 shadow-[0_18px_40px_rgba(16,24,40,0.10)] md:hidden"
+          className="border-t border-[#eaecf0] bg-white px-4 py-4 shadow-[0_18px_40px_rgba(2,22,35,0.10)] md:hidden"
           aria-label="Navegación móvil"
         >
           <div className="mx-auto grid max-w-7xl gap-2">
@@ -107,15 +121,15 @@ export function Navbar() {
                 className={cn(
                   "rounded-xl px-4 py-3 text-sm font-semibold transition",
                   pathname === item.href
-                    ? "bg-[#fff6df] text-[#8a621e]"
-                    : "text-[#344054] hover:bg-[#f6f7f9] hover:text-[#101828]",
+                    ? "bg-[#fdf0dc] text-[#8a5a08]"
+                    : "text-[#344054] hover:bg-[#f6f7f9] hover:text-[#021623]",
                 )}
               >
                 {item.label}
               </Link>
             ))}
             <a
-              href={whatsappUrl()}
+              href={whatsappUrl(siteConfig.whatsapp)}
               target="_blank"
               rel="noreferrer"
               className={buttonClassName("primary", "mt-2 w-full")}

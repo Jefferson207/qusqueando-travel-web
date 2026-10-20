@@ -15,12 +15,16 @@ export const siteConfig = {
   },
 };
 
-export function whatsappUrl(experienceName?: string) {
+export type SiteConfig = typeof siteConfig;
+
+export function whatsappMessageUrl(phone: string, message: string) {
+  return `https://wa.me/${phone.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
+}
+
+export function whatsappUrl(phone: string, experienceName?: string) {
   const message = experienceName
     ? `Hola, quiero información sobre el paquete ${experienceName} de Qusqueando Travel.`
     : "Hola, quiero información sobre las experiencias de Qusqueando Travel.";
 
-  return `https://wa.me/${siteConfig.whatsapp.replace("+", "")}?text=${encodeURIComponent(
-    message,
-  )}`;
+  return whatsappMessageUrl(phone, message);
 }

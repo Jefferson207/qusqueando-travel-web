@@ -3,21 +3,43 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { createAdminSession, destroyAdminSession, requireAdmin } from "@/lib/admin-auth";
+import {
+  checkAdminCredentials,
+  clearLoginAttempts,
+  createAdminSession,
+  destroyAdminSession,
+  registerLoginAttempt,
+  requireAdmin,
+} from "@/lib/admin-auth";
 import type { Experience } from "@/lib/data";
-import { categories as seedCategories } from "@/lib/data";
+import { isAllowedImageUrl } from "@/lib/image-hosts";
 import {
   deleteCategory,
   deleteExperience,
+  getCategories,
   getExperience,
+  getExperiences,
   getSiteConfig,
   saveCategory,
   saveExperience,
   saveSiteConfig,
   seedRedisIfEmpty,
 } from "@/lib/store";
-import { siteConfig } from "@/lib/site";
-import { slugify } from "@/lib/utils";
+import { currencies, slugify } from "@/lib/utils";
+
+function fail(path: string, message: string): never {
+  const separator = path.includes("?") ? "&" : "?";
+  redirect(`${path}${separator}error=${encodeURIComponent(message)}`);
+}
+
+function firstIssue(error: z.ZodError) {
+  return error.issues[0]?.message ?? "Datos inválidos.";
+}
+
+const imageUrl = z
+  .string()
+  .trim()
+  .refine(isAllowedImageUrl, "La imagen debe ser una URL https de Cloudinary, Unsplash o qusqueandotravel.com.");
 
 const loginSchema = z.object({
   username: z.string().min(1),
@@ -28,16 +50,15 @@ export async function loginAdmin(formData: FormData) {
   const parsed = loginSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) redirect("/admin/login?error=1");
 
-  const expectedUser = process.env.ADMIN_USERNAME ?? "admin";
-  const expectedPassword = process.env.ADMIN_PASSWORD ?? "";
+  if (!(await registerLoginAttempt())) {
+    redirect("/admin/login?error=bloqueado");
+  }
 
-  if (
-    parsed.data.username !== expectedUser ||
-    parsed.data.password !== expectedPassword
-  ) {
+  if (!checkAdminCredentials(parsed.data.username, parsed.data.password)) {
     redirect("/admin/login?error=1");
   }
 
+  await clearLoginAttempts();
   await seedRedisIfEmpty();
   await createAdminSession();
   redirect("/admin");
@@ -50,40 +71,66 @@ export async function logoutAdmin() {
 
 const experienceSchema = z.object({
   originalSlug: z.string().optional(),
-  mainImage: z.string().url(),
+  mainImage: imageUrl,
   gallery: z.string(),
-  name: z.string().min(3),
-  category: z.string().min(1),
-  shortDescription: z.string().min(10),
-  fullDescription: z.string().min(20),
-  duration: z.string().min(1),
-  location: z.string().min(1),
-  difficulty: z.string().min(1),
-  modality: z.string().min(1),
-  priceFrom: z.coerce.number().min(0),
-  currency: z.string().min(3),
+  name: z.string().trim().min(3, "El nombre debe tener al menos 3 caracteres."),
+  category: z.string().min(1, "Elige una categoría."),
+  shortDescription: z.string().trim().min(10, "La descripción corta debe tener al menos 10 caracteres."),
+  fullDescription: z.string().trim().min(20, "La descripción completa debe tener al menos 20 caracteres."),
+  duration: z.string().trim().min(1, "Indica la duración."),
+  location: z.string().trim().min(1, "Indica la ubicación."),
+  difficulty: z.string().trim().min(1, "Indica el nivel."),
+  modality: z.string().trim().min(1, "Indica la modalidad."),
+  priceFrom: z.coerce.number().min(0, "El precio no puede ser negativo."),
+  currency: z.enum(currencies, "Moneda no válida."),
   includes: z.string(),
   excludes: z.string(),
   itinerary: z.string(),
   faqs: z.string(),
   status: z.enum(["ACTIVE", "DRAFT"]),
-  featured: z.coerce.boolean().default(false),
-  order: z.coerce.number(),
+  featured: z.boolean(),
+  order: z.coerce.number().int().default(0),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
 });
 
+const lines = (value: string) =>
+  value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
+
 export async function upsertExperience(formData: FormData) {
   await requireAdmin();
-  const raw = Object.fromEntries(formData);
-  const parsed = experienceSchema.parse({
-    ...raw,
+  const originalSlug = String(formData.get("originalSlug") ?? "");
+  const backTo = originalSlug
+    ? `/admin/experiencias?edit=${encodeURIComponent(originalSlug)}`
+    : "/admin/experiencias";
+
+  const result = experienceSchema.safeParse({
+    ...Object.fromEntries(formData),
     featured: formData.get("featured") === "on",
   });
-  const slug = slugify(parsed.name);
+  if (!result.success) fail(backTo, firstIssue(result.error));
+  const parsed = result.data;
 
-  if (parsed.originalSlug && parsed.originalSlug !== slug) {
-    await deleteExperience(parsed.originalSlug);
+  const slug = slugify(parsed.name);
+  if (!slug) fail(backTo, "El nombre debe contener letras o números.");
+
+  const categories = await getCategories();
+  if (!categories.some((category) => category.name === parsed.category)) {
+    fail(backTo, "La categoría elegida no existe.");
+  }
+
+  const gallery = parsed.gallery
+    .split(/\r?\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  if (gallery.some((url) => !isAllowedImageUrl(url))) {
+    fail(backTo, "Todas las imágenes de la galería deben ser URLs https de Cloudinary, Unsplash o qusqueandotravel.com.");
+  }
+
+  const renamed = Boolean(parsed.originalSlug) && parsed.originalSlug !== slug;
+  if (!parsed.originalSlug || renamed) {
+    const existing = await getExperience(slug);
+    if (existing) fail(backTo, `Ya existe una experiencia con el enlace "/experiencias/${slug}". Usa otro nombre.`);
   }
 
   const previous = parsed.originalSlug ? await getExperience(parsed.originalSlug) : undefined;
@@ -101,28 +148,20 @@ export async function upsertExperience(formData: FormData) {
     priceFrom: parsed.priceFrom,
     currency: parsed.currency,
     mainImage: parsed.mainImage,
-    gallery: parsed.gallery.split(/\r?\n|,/).map((item) => item.trim()).filter(Boolean),
-    includes: parsed.includes.split(/\r?\n/).map((item) => item.trim()).filter(Boolean),
-    excludes: parsed.excludes.split(/\r?\n/).map((item) => item.trim()).filter(Boolean),
-    itinerary: parsed.itinerary
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((line) => {
-        const [title, ...rest] = line.split(":");
-        return { title: title.trim(), description: rest.join(":").trim() || title.trim() };
-      }),
-    faqs: parsed.faqs
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((line) => {
-        const [question, ...rest] = line.split("?");
-        return {
-          question: `${question.trim()}?`,
-          answer: rest.join("?").replace(/^[:\s]+/, "").trim() || "Por confirmar.",
-        };
-      }),
+    gallery: gallery.length ? gallery : [parsed.mainImage],
+    includes: lines(parsed.includes),
+    excludes: lines(parsed.excludes),
+    itinerary: lines(parsed.itinerary).map((line) => {
+      const [title, ...rest] = line.split(":");
+      return { title: title.trim(), description: rest.join(":").trim() || title.trim() };
+    }),
+    faqs: lines(parsed.faqs).map((line) => {
+      const [question, ...rest] = line.split("?");
+      return {
+        question: `${question.trim()}?`,
+        answer: rest.join("?").replace(/^[:\s]+/, "").trim() || "Por confirmar.",
+      };
+    }),
     status: parsed.status,
     featured: parsed.featured,
     order: parsed.order,
@@ -132,15 +171,17 @@ export async function upsertExperience(formData: FormData) {
       `Reserva ${parsed.name} con Qusqueando Travel y descubre Perú.`,
   };
 
-  if (!experience.gallery.length) {
-    experience.gallery = [experience.mainImage];
+  // Guardar primero y borrar después: si algo falla no se pierde la experiencia.
+  await saveExperience(experience);
+  if (renamed && parsed.originalSlug) {
+    await deleteExperience(parsed.originalSlug);
+    revalidatePath(`/experiencias/${parsed.originalSlug}`);
   }
 
-  await saveExperience(experience);
   revalidatePath("/");
   revalidatePath("/experiencias");
   revalidatePath(`/experiencias/${slug}`);
-  redirect("/admin/experiencias");
+  redirect("/admin/experiencias?saved=1");
 }
 
 export async function removeExperience(formData: FormData) {
@@ -149,42 +190,72 @@ export async function removeExperience(formData: FormData) {
   if (slug) await deleteExperience(slug);
   revalidatePath("/");
   revalidatePath("/experiencias");
+  revalidatePath(`/experiencias/${slug}`);
+  redirect("/admin/experiencias?saved=1");
 }
+
+const categorySchema = z
+  .string()
+  .trim()
+  .min(2, "El nombre de la categoría debe tener al menos 2 caracteres.")
+  .max(60, "El nombre de la categoría es demasiado largo.");
 
 export async function upsertCategory(formData: FormData) {
   await requireAdmin();
-  const name = String(formData.get("name") ?? "").trim();
-  if (!name) return;
+  const result = categorySchema.safeParse(formData.get("name") ?? "");
+  if (!result.success) fail("/admin/categorias", firstIssue(result.error));
+
+  const name = result.data;
   const slug = slugify(name);
+  if (!slug) fail("/admin/categorias", "El nombre debe contener letras o números.");
+
   await saveCategory({ id: slug, name, slug });
   revalidatePath("/experiencias");
   revalidatePath("/admin/categorias");
+  redirect("/admin/categorias?saved=1");
 }
 
 export async function removeCategory(formData: FormData) {
   await requireAdmin();
   const slug = String(formData.get("slug") ?? "");
-  if (slug && !seedCategories.some((category) => category.slug === slug)) {
-    await deleteCategory(slug);
+  const category = (await getCategories()).find((item) => item.slug === slug);
+  if (!category) fail("/admin/categorias", "La categoría no existe.");
+
+  const inUse = (await getExperiences()).filter((experience) => experience.category === category.name);
+  if (inUse.length) {
+    fail(
+      "/admin/categorias",
+      `No se puede eliminar "${category.name}": la usan ${inUse.length} experiencia(s). Cámbialas de categoría primero.`,
+    );
   }
+
+  await deleteCategory(slug);
+  revalidatePath("/experiencias");
   revalidatePath("/admin/categorias");
+  redirect("/admin/categorias?saved=1");
 }
+
+const siteConfigSchema = z.object({
+  name: z.string().trim().min(2, "Indica el nombre de la empresa."),
+  whatsappDisplay: z.string().trim().min(6, "Indica el WhatsApp visible."),
+  whatsapp: z
+    .string()
+    .trim()
+    .regex(/^\+?\d{8,15}$/, "El WhatsApp técnico debe tener solo dígitos con código de país, por ejemplo +51916788768."),
+  email: z.email("El correo no es válido."),
+  address: z.string().trim().min(2, "Indica la dirección."),
+  heroTitle: z.string().trim().min(5, "El texto del hero es muy corto."),
+  heroSubtitle: z.string().trim().min(5, "El subtítulo del hero es muy corto."),
+  heroImage: imageUrl,
+});
 
 export async function updateSiteConfig(formData: FormData) {
   await requireAdmin();
+  const result = siteConfigSchema.safeParse(Object.fromEntries(formData));
+  if (!result.success) fail("/admin/configuracion", firstIssue(result.error));
+
   const current = await getSiteConfig();
-  await saveSiteConfig({
-    ...siteConfig,
-    ...current,
-    name: String(formData.get("name") ?? current.name),
-    whatsappDisplay: String(formData.get("whatsappDisplay") ?? current.whatsappDisplay),
-    whatsapp: String(formData.get("whatsapp") ?? current.whatsapp),
-    email: String(formData.get("email") ?? current.email),
-    address: String(formData.get("address") ?? current.address),
-    heroTitle: String(formData.get("heroTitle") ?? current.heroTitle),
-    heroSubtitle: String(formData.get("heroSubtitle") ?? current.heroSubtitle),
-    heroImage: String(formData.get("heroImage") ?? current.heroImage),
-  });
-  revalidatePath("/");
-  revalidatePath("/admin/configuracion");
+  await saveSiteConfig({ ...current, ...result.data });
+  revalidatePath("/", "layout");
+  redirect("/admin/configuracion?saved=1");
 }

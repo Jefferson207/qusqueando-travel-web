@@ -3,7 +3,8 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Headphones, Info, MapPinned, MessageCircle, UserRound, X } from "lucide-react";
-import { siteConfig } from "@/lib/site";
+import { useSiteConfig } from "@/components/site-config-provider";
+import { whatsappMessageUrl } from "@/lib/site";
 
 const options = [
   {
@@ -21,12 +22,9 @@ const options = [
   },
 ];
 
-function buildWhatsappUrl(message: string) {
-  return `https://wa.me/${siteConfig.whatsapp.replace("+", "")}?text=${encodeURIComponent(message)}`;
-}
-
 export function FloatingWhatsappChat() {
   const pathname = usePathname();
+  const siteConfig = useSiteConfig();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -48,14 +46,14 @@ export function FloatingWhatsappChat() {
   return (
     <div className="fixed bottom-5 right-4 z-[70] flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
       {isOpen ? (
-        <div className="w-[min(calc(100vw-2rem),370px)] overflow-hidden rounded-2xl border border-[#dfe4ec] bg-white shadow-[0_24px_70px_rgba(16,24,40,0.22)]">
-          <div className="relative overflow-hidden bg-[#101828] px-5 py-5 text-white">
+        <div className="w-[min(calc(100vw-2rem),370px)] overflow-hidden rounded-2xl border border-[#dfe4ec] bg-white shadow-[0_24px_70px_rgba(2,22,35,0.22)]">
+          <div className="relative overflow-hidden bg-[#021623] px-5 py-5 text-white">
             <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[#25d366]/20" />
             <div className="relative flex items-start justify-between gap-4">
               <div className="flex gap-3">
-                <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-[#101828] shadow-[0_14px_30px_rgba(0,0,0,0.18)]">
+                <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-[#021623] shadow-[0_14px_30px_rgba(0,0,0,0.18)]">
                   <UserRound className="h-6 w-6" />
-                  <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-[#101828] bg-[#25d366]" />
+                  <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-[#021623] bg-[#25d366]" />
                 </span>
                 <div>
                   <p className="text-sm font-bold">Asesora de viajes</p>
@@ -84,7 +82,7 @@ export function FloatingWhatsappChat() {
               return (
                 <a
                   key={option.label}
-                  href={buildWhatsappUrl(option.message)}
+                  href={whatsappMessageUrl(siteConfig.whatsapp, option.message)}
                   target="_blank"
                   rel="noreferrer"
                   className="group flex items-start gap-3 rounded-xl border border-[#eaecf0] bg-white p-3 text-left transition hover:-translate-y-0.5 hover:border-[#25d366] hover:shadow-md"
@@ -94,7 +92,7 @@ export function FloatingWhatsappChat() {
                     <Icon className="h-5 w-5" />
                   </span>
                   <span>
-                    <span className="block text-sm font-bold text-[#101828]">{option.label}</span>
+                    <span className="block text-sm font-bold text-[#021623]">{option.label}</span>
                     <span className="mt-1 block text-xs leading-5 text-[#667085]">{option.description}</span>
                   </span>
                 </a>

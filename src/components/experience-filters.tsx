@@ -75,14 +75,14 @@ export function ExperienceFilters({
         </div>
       ) : (
         <div className="surface-card mt-8 p-8 text-center">
-          <h2 className="text-xl font-bold text-[#101828]">No encontramos experiencias con esos filtros</h2>
+          <h2 className="text-xl font-bold text-[#021623]">No encontramos experiencias con esos filtros</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[#667085]">
             Prueba con otra ubicación, categoría o deja que un asesor te recomiende una ruta disponible.
           </p>
           <button
             type="button"
             onClick={clearFilters}
-            className="mt-5 inline-flex h-11 items-center justify-center rounded-full bg-[#101828] px-5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#172033]"
+            className="mt-5 inline-flex h-11 items-center justify-center rounded-full bg-[#021623] px-5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#0b2a3c]"
           >
             Ver todas las experiencias
           </button>

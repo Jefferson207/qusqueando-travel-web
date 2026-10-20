@@ -34,7 +34,7 @@ export default function AboutPage() {
       <div className="mx-auto grid max-w-7xl gap-12 px-4 sm:px-6 lg:grid-cols-[1fr_0.85fr] lg:px-8">
         <div>
           <p className="eyebrow">Nosotros</p>
-          <h1 className="mt-3 text-4xl font-bold text-[#101828] sm:text-5xl">
+          <h1 className="mt-3 text-4xl font-bold text-[#021623] sm:text-5xl">
             Turismo cultural con mirada andina y servicio premium.
           </h1>
           <div className="mt-8 grid gap-4 text-[#475467]">
@@ -44,11 +44,11 @@ export default function AboutPage() {
               return (
                 <section key={block.title} className="surface-card surface-hover p-5">
                   <div className="surface-content flex gap-4">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#fff6df] text-[#8a621e]">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#fdf0dc] text-[#8a5a08]">
                       <Icon className="h-5 w-5" />
                     </span>
                     <div>
-                      <h2 className="text-xl font-bold text-[#101828]">{block.title}</h2>
+                      <h2 className="text-xl font-bold text-[#021623]">{block.title}</h2>
                       <p className="mt-3 leading-7">{block.content}</p>
                     </div>
                   </div>

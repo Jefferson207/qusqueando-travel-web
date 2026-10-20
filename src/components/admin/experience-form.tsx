@@ -1,5 +1,6 @@
 import type { Category, Experience } from "@/lib/data";
 import { upsertExperience } from "@/app/admin/actions";
+import { currencies } from "@/lib/utils";
 
 const emptyExperience: Partial<Experience> = {
   name: "",
@@ -39,22 +40,22 @@ export function ExperienceForm({
       <input type="hidden" name="originalSlug" defaultValue={experience?.slug ?? ""} />
       <div className="flex flex-col justify-between gap-4 border-b border-[#e4e7ec] pb-5 md:flex-row md:items-center">
         <div>
-          <h2 className="text-xl font-bold text-[#101828]">
+          <h2 className="text-xl font-bold text-[#021623]">
             {experience ? "Editar experiencia" : "Nueva experiencia"}
           </h2>
           <p className="mt-1 text-sm text-[#667085]">Tours, paquetes y servicios usan el mismo formulario.</p>
         </div>
-        <button className="h-11 rounded-full bg-[#101828] px-6 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:scale-[1.03]" type="submit">
+        <button className="h-11 rounded-full bg-[#021623] px-6 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:scale-[1.03]" type="submit">
           Guardar
         </button>
       </div>
 
       <div className="mt-6 grid gap-5 md:grid-cols-2">
         <Field label="Imagen principal">
-          <input name="mainImage" defaultValue={value.mainImage} placeholder="URL de imagen" className="field" required />
+          <input name="mainImage" type="url" defaultValue={value.mainImage} placeholder="https://res.cloudinary.com/..." className="field" required />
         </Field>
         <Field label="Nombre">
-          <input name="name" defaultValue={value.name} className="field" required />
+          <input name="name" defaultValue={value.name} className="field" required minLength={3} />
         </Field>
         <Field label="Categoría">
           <select name="category" defaultValue={value.category || categories[0]?.name} className="field">
@@ -76,13 +77,17 @@ export function ExperienceForm({
           <input name="modality" defaultValue={value.modality} className="field" required />
         </Field>
         <Field label="Precio desde">
-          <input name="priceFrom" type="number" defaultValue={value.priceFrom} className="field" required />
+          <input name="priceFrom" type="number" min={0} step="any" defaultValue={value.priceFrom} className="field" required />
         </Field>
         <Field label="Moneda">
-          <input name="currency" defaultValue={value.currency} className="field" required />
+          <select name="currency" defaultValue={value.currency} className="field">
+            {currencies.map((currency) => (
+              <option key={currency}>{currency}</option>
+            ))}
+          </select>
         </Field>
         <Field label="Orden">
-          <input name="order" type="number" defaultValue={value.order} className="field" />
+          <input name="order" type="number" step={1} defaultValue={value.order} className="field" />
         </Field>
         <Field label="Estado">
           <select name="status" defaultValue={value.status} className="field">
@@ -95,10 +100,10 @@ export function ExperienceForm({
           Destacado
         </label>
         <Field label="Descripción corta" wide>
-          <textarea name="shortDescription" defaultValue={value.shortDescription} rows={3} className="field" required />
+          <textarea name="shortDescription" defaultValue={value.shortDescription} rows={3} className="field" required minLength={10} />
         </Field>
         <Field label="Descripción completa" wide>
-          <textarea name="fullDescription" defaultValue={value.fullDescription} rows={5} className="field" required />
+          <textarea name="fullDescription" defaultValue={value.fullDescription} rows={5} className="field" required minLength={20} />
         </Field>
         <Field label="Galería" wide>
           <textarea name="gallery" defaultValue={value.gallery?.join("\n")} rows={3} className="field" placeholder="Una URL por línea" />

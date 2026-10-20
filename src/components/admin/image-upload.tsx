@@ -15,7 +15,7 @@ export function ImageUpload({
     <label className="grid gap-2 text-sm font-medium text-[#344054]">
       {label}
       <span className="flex items-center gap-3">
-        <ImagePlus className="h-5 w-5 text-[#b8872d]" />
+        <ImagePlus className="h-5 w-5 text-[#b97a0b]" />
         <input
           value={value}
           onChange={(event) => onChange(event.target.value)}

@@ -1,102 +1,118 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Award, Handshake, Leaf, Telescope } from "lucide-react";
-import { ExperienceCard } from "@/components/experience-card";
+import {
+  ArrowRight,
+  Leaf,
+  ShieldCheck,
+  Sparkles,
+  UsersRound,
+} from "lucide-react";
+import { FeaturedCarousel } from "@/components/featured-carousel";
 import { HomeHero } from "@/components/home-hero";
+import { HomeSearch } from "@/components/home-search";
 import { MotionSection } from "@/components/motion-section";
-import { WhatsAppButton } from "@/components/whatsapp-button";
-import { buttonClassName } from "@/components/ui/button";
-import { getPublicExperiences, getSiteConfig } from "@/lib/store";
+import { getCategories, getPublicExperiences, getSiteConfig } from "@/lib/store";
 import { homeMetadata } from "@/lib/seo";
 
 export const metadata = homeMetadata;
 
-const benefits = [
-  { title: "Guías especializados", icon: Telescope },
-  { title: "Experiencias auténticas", icon: Award },
-  { title: "Turismo responsable", icon: Leaf },
-  { title: "Atención personalizada", icon: Handshake },
-];
-
 export const dynamic = "force-dynamic";
 
+const benefits = [
+  { title: "Experiencias auténticas", text: "Conecta con la cultura viva", icon: Leaf },
+  { title: "Guías locales expertos", text: "Pasión y conocimiento del territorio", icon: UsersRound },
+  { title: "Turismo responsable", text: "Respeto por las comunidades", icon: ShieldCheck },
+  { title: "Experiencias únicas", text: "Diseñadas a tu medida", icon: Sparkles },
+];
+
 export default async function Home() {
-  const [experiences, config] = await Promise.all([getPublicExperiences(), getSiteConfig()]);
-  const featured = experiences.filter((experience) => experience.featured).slice(0, 6);
+  const [experiences, categories, config] = await Promise.all([
+    getPublicExperiences(),
+    getCategories(),
+    getSiteConfig(),
+  ]);
+
+  const featured = experiences.filter((experience) => experience.featured);
+  const carousel = (featured.length >= 4 ? featured : experiences).slice(0, 10);
+  const locations = [...new Set(experiences.map((experience) => experience.location))];
 
   return (
     <>
       <HomeHero config={config} />
 
-      <section className="relative overflow-hidden bg-white py-24">
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_15%_10%,rgba(212,149,42,0.10),transparent_28%),radial-gradient(circle_at_85%_38%,rgba(2,22,35,0.08),transparent_24%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <MotionSection>
-            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#b97a0b]">
-                  Experiencias destacadas
-                </p>
-                <h2 className="mt-3 max-w-3xl text-3xl font-bold text-[#021623] sm:text-4xl">
-                  Viajes curados para descubrir el Perú profundo
-                </h2>
-              </div>
-              <Link href="/experiencias" className={buttonClassName("outline")}>
-                Ver todas
-              </Link>
-            </div>
-          </MotionSection>
-          <div className="mt-12 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-            {featured.map((experience) => (
-              <ExperienceCard key={experience.id} experience={experience} />
-            ))}
-          </div>
+      <div className="bg-[#fbf6ee]">
+        <div className="relative z-10 mx-auto -mt-10 max-w-5xl px-4 sm:-mt-16 sm:px-6 lg:-mt-20 lg:px-8">
+          <HomeSearch destinations={[...new Set([...categories.map((category) => category.name), ...locations])]} />
         </div>
-      </section>
 
-      <section className="relative overflow-hidden bg-[#f6ecdc] py-24">
-        <div className="absolute inset-0 opacity-[0.18] [background-image:linear-gradient(135deg,#8a5a08_1px,transparent_1px),linear-gradient(45deg,#021623_1px,transparent_1px)] [background-size:44px_44px]" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-6 md:grid-cols-4">
-            {benefits.map((benefit) => (
-              <MotionSection key={benefit.title}>
-                <div className="surface-card surface-hover group h-full p-6 backdrop-blur">
-                  <div className="surface-content">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#021623] text-[#d4952a] shadow-[0_14px_34px_rgba(2,22,35,0.18)] transition duration-300 group-hover:rotate-3 group-hover:scale-105">
-                    <benefit.icon className="h-7 w-7" />
-                  </div>
-                  <h3 className="mt-6 text-lg font-bold text-[#021623]">{benefit.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-[#667085]">
-                    Servicio cuidado desde la planificación hasta el cierre de cada recorrido.
-                  </p>
-                  </div>
-                </div>
+        <section aria-label="Por qué viajar con nosotros" className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {benefits.map((benefit, index) => (
+              <MotionSection key={benefit.title} delay={index * 0.12}>
+              <div className="group flex items-center gap-4">
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#e9d3a8] bg-white text-[#b97a0b] shadow-sm transition duration-300 group-hover:-translate-y-1 group-hover:rotate-6 group-hover:border-[#d4952a] group-hover:bg-[#d4952a] group-hover:text-white">
+                  <benefit.icon className="h-6 w-6" strokeWidth={1.6} />
+                </span>
+                <span>
+                  <span className="block font-semibold text-[#021623]">{benefit.title}</span>
+                  <span className="block text-sm text-[#667085]">{benefit.text}</span>
+                </span>
+              </div>
               </MotionSection>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="relative overflow-hidden bg-[#021623] py-24">
-        <Image
-          src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1800&auto=format&fit=crop"
-          alt="Cielo estrellado sobre paisaje andino"
-          fill
-          sizes="100vw"
-          className="object-cover opacity-35"
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(212,149,42,0.28),transparent_30%),linear-gradient(180deg,rgba(2,22,35,0.4),rgba(2,22,35,0.92))]" />
-        <MotionSection>
-          <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">
-              Reserva una experiencia hecha para mirar el Perú con otros ojos.
-            </h2>
-            <p className="mx-auto mt-5 max-w-2xl text-[#d0d5dd]">
-              Te ayudamos a elegir la ruta ideal según tus fechas, ritmo de viaje e intereses culturales.
-            </p>
-            <WhatsAppButton className="mt-8" />
+        <section className="relative overflow-hidden pb-20 pt-8">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_40%,rgba(212,149,42,0.10),transparent_30%)]" />
+          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <FeaturedCarousel experiences={carousel} />
           </div>
-        </MotionSection>
+        </section>
+      </div>
+
+      <section className="relative isolate overflow-hidden bg-[#06201f] text-white">
+        <div className="relative isolate flex min-h-[640px] items-center lg:min-h-[78vh]">
+          <Image
+            src={config.aboutImage}
+            alt="Viajera con poncho andino contemplando Machu Picchu al amanecer"
+            fill
+            sizes="100vw"
+            quality={90}
+            className="fx-kenburns -z-10 object-cover object-[30%_center]"
+          />
+          {/* Oscurece solo el lado del texto para que la viajera se vea limpia. */}
+          <div className="absolute inset-0 -z-10 bg-[linear-gradient(270deg,rgba(4,22,24,0.88)_0%,rgba(4,22,24,0.62)_34%,rgba(4,22,24,0.1)_62%,rgba(4,22,24,0)_100%)]" />
+          <div className="absolute inset-0 -z-10 bg-[#041618]/45 lg:hidden" />
+          <svg className="absolute inset-x-0 -top-px h-10 w-full sm:h-14" viewBox="0 0 1440 56" preserveAspectRatio="none" aria-hidden="true">
+            <path fill="#fbf6ee" d="M0 0h1440v20c-220 30-460 36-720 20S220 8 0 34Z" />
+          </svg>
+
+          <div className="mx-auto w-full max-w-7xl px-4 py-28 sm:px-6 lg:px-8">
+            <div className="max-w-xl lg:ml-auto">
+              <MotionSection>
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#f3c77a]">¿Por qué elegir Qusqueando?</p>
+                <h2 className="mt-4 font-display text-4xl font-semibold leading-tight [text-shadow:0_4px_24px_rgba(0,0,0,0.45)] sm:text-6xl">
+                  Más que viajes,
+                  <span className="block italic text-[#e6a93e]">conexiones reales</span>
+                </h2>
+                <p className="mt-6 text-lg leading-8 text-white/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.45)]">
+                  Creamos experiencias que transforman, uniendo cultura, naturaleza y personas en viajes con propósito.
+                  Diseñamos cada ruta según tus intereses, con guías locales apasionados y respeto por las comunidades
+                  que nos reciben.
+                </p>
+                <Link
+                  href="/nosotros"
+                  className="mt-9 inline-flex h-12 items-center gap-2 rounded-full bg-[#d4952a] px-7 text-sm font-semibold text-[#021623] shadow-[0_14px_32px_rgba(212,149,42,0.3)] transition hover:-translate-y-0.5 hover:bg-[#e6a93e]"
+                >
+                  Conoce nuestra historia
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </MotionSection>
+            </div>
+          </div>
+        </div>
+
       </section>
     </>
   );

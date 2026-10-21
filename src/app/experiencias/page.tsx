@@ -11,8 +11,16 @@ export const metadata = pageMetadata({
 
 export const dynamic = "force-dynamic";
 
-export default async function ExperiencesPage() {
-  const [categories, experiences] = await Promise.all([getCategories(), getPublicExperiences()]);
+export default async function ExperiencesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ categoria?: string; q?: string }>;
+}) {
+  const [{ categoria, q }, categories, experiences] = await Promise.all([
+    searchParams,
+    getCategories(),
+    getPublicExperiences(),
+  ]);
 
   return (
     <section className="relative overflow-hidden bg-[#faf2e6] py-16 sm:py-20">
@@ -31,7 +39,7 @@ export default async function ExperiencesPage() {
           </p>
         </div>
         <div className="mt-10">
-          <ExperienceFilters experiences={experiences} categories={categories} />
+          <ExperienceFilters experiences={experiences} categories={categories} initialQuery={q} initialCategory={categoria} />
         </div>
       </div>
     </section>

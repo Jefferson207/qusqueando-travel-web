@@ -1,5 +1,8 @@
+import { FolderTree, Plus } from "lucide-react";
 import { removeCategory, upsertCategory } from "@/app/admin/actions";
-import { AdminNotice, AdminShell } from "@/components/admin/admin-shell";
+import { AdminShell } from "@/components/admin/admin-shell";
+import { AdminHeader, AdminNotice, AdminPanel, adminPrimaryButton } from "@/components/admin/admin-ui";
+import { DeleteButton } from "@/components/admin/delete-button";
 import { requireAdmin } from "@/lib/admin-auth";
 import { getCategories, getExperiences } from "@/lib/store";
 
@@ -17,30 +20,43 @@ export default async function AdminCategoriesPage({
 
   return (
     <AdminShell>
-      <section>
-      <h1 className="text-3xl font-bold text-[#021623]">Categorías</h1>
+      <AdminHeader title="Categorías" description="Agrupan los paquetes en el catálogo y en los filtros de la web." />
       <AdminNotice error={error} saved={saved} />
-      <form action={upsertCategory} className="mt-6 flex flex-col gap-3 rounded-[24px] border border-[#e4e7ec] bg-white p-5 shadow-sm sm:flex-row">
-        <input name="name" placeholder="Nueva categoría" className="field" required minLength={2} maxLength={60} />
-        <button className="h-11 rounded-full bg-[#021623] px-5 text-sm font-semibold text-white">
-          Guardar
-        </button>
-      </form>
+
+      <AdminPanel title="Nueva categoría" className="mt-8">
+        <form action={upsertCategory} className="flex flex-col gap-3 sm:flex-row">
+          <input name="name" placeholder="Ej. Aventura" className="field" required minLength={2} maxLength={60} />
+          <button className={adminPrimaryButton}>
+            <Plus className="h-4 w-4" /> Agregar
+          </button>
+        </form>
+      </AdminPanel>
+
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {categories.map((category) => (
-          <div key={category.id} className="rounded-[24px] border border-[#e4e7ec] bg-white p-5 shadow-sm">
-            <p className="font-semibold text-[#021623]">{category.name}</p>
-            <p className="mt-1 text-sm text-[#667085]">
-              {experiences.filter((experience) => experience.category === category.name).length} experiencia(s)
-            </p>
-            <form action={removeCategory} className="mt-4">
-              <input type="hidden" name="slug" value={category.slug} />
-              <button className="text-sm font-semibold text-red-700">Eliminar</button>
-            </form>
-          </div>
-        ))}
+        {categories.map((category) => {
+          const count = experiences.filter((experience) => experience.category === category.name).length;
+          return (
+            <div key={category.id} className="flex items-center gap-4 rounded-2xl border border-[#e4e7ec] bg-white p-4 shadow-sm">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fdf0dc] text-[#8a5a08]">
+                <FolderTree className="h-5 w-5" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-semibold text-[#021623]">{category.name}</span>
+                <span className="block text-xs text-[#667085]">
+                  {count} {count === 1 ? "paquete" : "paquetes"}
+                </span>
+              </span>
+              <DeleteButton
+                action={removeCategory}
+                name="slug"
+                value={category.slug}
+                label="Quitar"
+                confirmText={`¿Eliminar la categoría "${category.name}"?`}
+              />
+            </div>
+          );
+        })}
       </div>
-      </section>
     </AdminShell>
   );
 }

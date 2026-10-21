@@ -4,18 +4,35 @@ export const siteConfig = {
   whatsappDisplay: "+51 916 788 768",
   email: "reservas@qusqueandotravel.com",
   address: "Cusco, Perú",
+  // El texto después de "|" se muestra en una segunda línea dorada en cursiva.
+  heroTitle: "Vive el Perú | como nunca antes",
+  heroSubtitle:
+    "Experiencias culturales, arqueoastronómicas y de naturaleza diseñadas para conectar con la esencia andina.",
+  heroImage: "/images/hero-machu-picchu-dorado.jpg",
+  // Imagen de fondo de la sección "¿Por qué elegir Qusqueando?".
+  aboutImage: "/images/viajera-machu-picchu.jpg",
+  // Ícono del menú superior y logo completo del pie de página.
+  logoMark: "/logo-emblem.png",
+  logoFull: "/logo.png",
+  socials: {
+    instagram: "https://instagram.com/qusqueandotravel",
+    facebook: "https://facebook.com/qusqueandotravel",
+    tiktok: "",
+    youtube: "",
+  },
+};
+
+export type SiteConfig = typeof siteConfig;
+
+// Valores por defecto anteriores: si siguen guardados en Redis sin cambios,
+// se reemplazan por los nuevos del rediseño.
+export const legacySiteDefaults: Partial<SiteConfig> = {
   heroTitle: "Explora el Perú desde su historia, sus estrellas y su cultura.",
   heroSubtitle:
     "Experiencias culturales, arqueoastronómicas y de naturaleza diseñadas para conectar con la cosmovisión andina.",
   heroImage:
     "https://images.unsplash.com/photo-1587595431973-160d0d94add1?q=80&w=1800&auto=format&fit=crop",
-  socials: {
-    instagram: "https://instagram.com/qusqueandotravel",
-    facebook: "https://facebook.com/qusqueandotravel",
-  },
 };
-
-export type SiteConfig = typeof siteConfig;
 
 export const siteDomain = "qusqueandotravel.com";
 
@@ -51,6 +68,20 @@ export const whatsappMessages = {
       "🏛️ Cultura, naturaleza y astronomía andina",
       "",
       "¿Me ayudan a armar mi itinerario? 😊",
+      "",
+      webSignature,
+    ].join("\n"),
+
+  availability: (destination: string, date: string, travelers: string) =>
+    [
+      "¡Hola, *Qusqueando Travel*! 👋",
+      "",
+      "Quisiera consultar *disponibilidad* para:",
+      `📍 Destino: *${destination || "Por definir"}*`,
+      `📅 Fecha: *${date || "Por definir"}*`,
+      `👥 Viajeros: *${travelers}*`,
+      "",
+      "¿Qué experiencias me recomiendan? 😊",
       "",
       webSignature,
     ].join("\n"),

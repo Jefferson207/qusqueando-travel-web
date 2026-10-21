@@ -1,0 +1,52 @@
+{
+  "machu-picchu": [
+    "/images/experiencias/machu-picchu.jpg",
+    "/images/atardecer-machu-picchu.jpg",
+    "/images/experiencias/tour-privado.jpg"
+  ],
+  "valle-sagrado": [
+    "/images/experiencias/valle-sagrado.jpg",
+    "/images/experiencias/equinoccio.jpg",
+    "/images/experiencias/tour-arqueoastronomico.jpg"
+  ],
+  "waqrapukara": [
+    "/images/experiencias/waqrapukara.jpg",
+    "/images/experiencias/paquete-personalizado.jpg",
+    "/images/experiencias/valle-sagrado.jpg"
+  ],
+  "city-tour-cusco": [
+    "/images/experiencias/city-tour-cusco.jpg",
+    "/images/experiencias/sacsayhuaman.jpg",
+    "/images/experiencias/tour-arqueoastronomico.jpg"
+  ],
+  "tour-arqueoastronomico": [
+    "/images/experiencias/tour-arqueoastronomico.jpg",
+    "/images/experiencias/sacsayhuaman.jpg",
+    "/images/experiencias/equinoccio.jpg"
+  ],
+  "observacion-de-estrellas": [
+    "/images/experiencias/observacion-de-estrellas.jpg",
+    "/images/experiencias/valle-sagrado.jpg",
+    "/images/experiencias/solsticio-de-invierno.jpg"
+  ],
+  "solsticio-de-invierno": [
+    "/images/experiencias/solsticio-de-invierno.jpg",
+    "/images/experiencias/tour-arqueoastronomico.jpg",
+    "/images/experiencias/machu-picchu.jpg"
+  ],
+  "equinoccio": [
+    "/images/experiencias/equinoccio.jpg",
+    "/images/experiencias/sacsayhuaman.jpg",
+    "/images/experiencias/solsticio-de-invierno.jpg"
+  ],
+  "tour-privado": [
+    "/images/experiencias/tour-privado.jpg",
+    "/images/experiencias/machu-picchu.jpg",
+    "/images/experiencias/valle-sagrado.jpg"
+  ],
+  "paquete-personalizado": [
+    "/images/experiencias/paquete-personalizado.jpg",
+    "/images/experiencias/waqrapukara.jpg",
+    "/images/experiencias/tour-privado.jpg"
+  ]
+}

@@ -1,3 +1,4 @@
+import experienceImages from "@/lib/experience-images.json";
 import { slugify } from "@/lib/utils";
 
 export type Category = {
@@ -43,14 +44,10 @@ export const categories: Category[] = [
   "Personalizados",
 ].map((name) => ({ id: slugify(name), name, slug: slugify(name) }));
 
-const imageBank = [
-  "https://images.unsplash.com/photo-1587595431973-160d0d94add1?q=80&w=1400&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1526392060635-9d6019884377?q=80&w=1400&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1531968455001-5c5272a41129?q=80&w=1400&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1627896157734-4d7d438b0896?q=80&w=1400&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1400&auto=format&fit=crop",
-];
+// Fotos de cada experiencia (la primera es la principal). Compartido con
+// scripts/actualizar-imagenes-experiencias.mjs.
+const imagesBySlug: Record<string, string[]> = experienceImages;
+const fallbackImages = ["/images/hero-machu-picchu-dorado.jpg"];
 
 const baseIncludes = [
   "Guía especializado",
@@ -86,12 +83,8 @@ function makeExperience(
     modality: index % 2 === 0 ? "Privado o compartido" : "Privado",
     priceFrom,
     currency: "USD",
-    mainImage: imageBank[index % imageBank.length],
-    gallery: [
-      imageBank[index % imageBank.length],
-      imageBank[(index + 1) % imageBank.length],
-      imageBank[(index + 2) % imageBank.length],
-    ],
+    mainImage: (imagesBySlug[slug] ?? fallbackImages)[0],
+    gallery: imagesBySlug[slug] ?? fallbackImages,
     includes: baseIncludes,
     excludes: baseExcludes,
     itinerary: [

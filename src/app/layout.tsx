@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import { Footer } from "@/components/footer";
 import { FloatingWhatsappChat } from "@/components/floating-whatsapp-chat";
 import { Navbar } from "@/components/navbar";
+import { PublicOnly } from "@/components/public-only";
 import { SiteConfigProvider } from "@/components/site-config-provider";
 import { WhatsappDesktopLinks } from "@/components/whatsapp-desktop-links";
 import { siteUrl, siteSchema } from "@/lib/seo";
@@ -12,6 +13,12 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+});
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
 });
 
 const geistMono = Geist_Mono({
@@ -46,15 +53,19 @@ export default async function RootLayout({
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-white text-[#021623]">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema(siteConfig)).replace(/</g, "\\u003c") }} />
         <SiteConfigProvider config={siteConfig}>
-          <Navbar />
+          <PublicOnly>
+            <Navbar />
+          </PublicOnly>
           <main className="flex-1">{children}</main>
-          <Footer />
-          <FloatingWhatsappChat />
+          <PublicOnly>
+            <Footer />
+            <FloatingWhatsappChat />
+          </PublicOnly>
           <WhatsappDesktopLinks />
         </SiteConfigProvider>
       </body>

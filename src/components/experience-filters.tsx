@@ -8,12 +8,18 @@ import type { Category, Experience } from "@/lib/data";
 export function ExperienceFilters({
   experiences,
   categories,
+  initialQuery = "",
+  initialCategory = "Todas",
 }: {
   experiences: Experience[];
   categories: Category[];
+  initialQuery?: string;
+  initialCategory?: string;
 }) {
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("Todas");
+  const [query, setQuery] = useState(initialQuery);
+  const [category, setCategory] = useState(
+    categories.some((item) => item.name === initialCategory) ? initialCategory : "Todas",
+  );
 
   const filtered = useMemo(() => {
     return experiences.filter((experience) => {

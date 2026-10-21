@@ -3,6 +3,7 @@
 import type { FormEvent } from "react";
 import { BookOpen, FileText, Send, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { legalEntity } from "@/lib/legal";
 import type { SiteConfig } from "@/lib/site";
 
 type FormElement = HTMLFormElement & {
@@ -63,6 +64,8 @@ export function ClaimsForm({ siteConfig }: { siteConfig: SiteConfig }) {
       >
         <div className="grid gap-5 md:grid-cols-2">
           <ReadOnlyField label="Razón comercial" value={siteConfig.name} />
+          {legalEntity.razonSocial ? <ReadOnlyField label="Razón social" value={legalEntity.razonSocial} /> : null}
+          {legalEntity.ruc ? <ReadOnlyField label="RUC" value={legalEntity.ruc} /> : null}
           <ReadOnlyField label="Correo electrónico" value={siteConfig.email} />
           <ReadOnlyField label="Teléfono" value={siteConfig.whatsappDisplay} />
           <ReadOnlyField label="Dirección" value={siteConfig.address} />

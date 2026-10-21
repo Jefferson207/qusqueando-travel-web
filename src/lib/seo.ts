@@ -7,14 +7,16 @@ export const publicPaths = ["/", "/nosotros", "/experiencias", "/contacto", "/po
 
 type PageSeo = { path: string; title: string; description: string; image?: string; noindex?: boolean };
 
+const absoluteUrl = (url: string) => (url.startsWith("/") ? `${siteUrl}${url}` : url);
+
 export function pageMetadata({ path, title, description, image = siteConfig.heroImage, noindex = false }: PageSeo): Metadata {
   const fullTitle = title.endsWith(`| ${siteConfig.name}`) ? title : `${title} | ${siteConfig.name}`;
   return {
     title: { absolute: fullTitle }, description,
     alternates: { canonical: noindex ? null : `${siteUrl}${path}` },
     robots: { index: !noindex, follow: true, googleBot: { index: !noindex, follow: true, "max-image-preview": "large" } },
-    openGraph: { title: fullTitle, description, url: `${siteUrl}${path}`, siteName: siteConfig.name, locale: "es_PE", type: "website", images: [{ url: image, alt: title }] },
-    twitter: { card: "summary_large_image", title: fullTitle, description, images: [{ url: image, alt: title }] },
+    openGraph: { title: fullTitle, description, url: `${siteUrl}${path}`, siteName: siteConfig.name, locale: "es_PE", type: "website", images: [{ url: absoluteUrl(image), alt: title }] },
+    twitter: { card: "summary_large_image", title: fullTitle, description, images: [{ url: absoluteUrl(image), alt: title }] },
   };
 }
 
@@ -37,7 +39,7 @@ export function experienceSchema(experience: Experience) {
   const url = `${siteUrl}/experiencias/${encodeURIComponent(experience.slug)}`;
   return {
     "@context": "https://schema.org", "@type": "ItemPage", "@id": `${url}#webpage`,
-    url, name: experience.name, description: experience.shortDescription, image: experience.mainImage,
+    url, name: experience.name, description: experience.shortDescription, image: absoluteUrl(experience.mainImage),
     inLanguage: "es-PE", isPartOf: { "@id": `${siteUrl}/#website` },
     publisher: { "@id": `${siteUrl}/#agency` },
     breadcrumb: {
@@ -55,9 +57,9 @@ export function siteSchema(config: SiteConfig = siteConfig) {
     "@context": "https://schema.org",
     "@graph": [
       { "@type": "TravelAgency", "@id": `${siteUrl}/#agency`, name: config.name, url: `${siteUrl}/`,
-        telephone: config.whatsapp, email: config.email, image: config.heroImage, logo: `${siteUrl}/logo.png`,
+        telephone: config.whatsapp, email: config.email, image: absoluteUrl(config.heroImage), logo: absoluteUrl(config.logoFull),
         address: { "@type": "PostalAddress", addressLocality: "Cusco", addressCountry: "PE" },
-        sameAs: [config.socials.facebook, config.socials.instagram],
+        sameAs: Object.values(config.socials).filter(Boolean),
       },
       { "@type": "WebSite", "@id": `${siteUrl}/#website`, name: config.name, url: `${siteUrl}/`,
         inLanguage: "es-PE", publisher: { "@id": `${siteUrl}/#agency` },

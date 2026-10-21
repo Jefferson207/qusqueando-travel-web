@@ -1,54 +1,81 @@
+"use client";
+
 import Link from "next/link";
-import { BarChart3, FolderTree, Settings, Waypoints } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { ExternalLink, FolderTree, LayoutDashboard, LogOut, Settings, Waypoints } from "lucide-react";
+import { logoutAdmin } from "@/app/admin/actions";
+import { useSiteConfig } from "@/components/site-config-provider";
+import { cn } from "@/lib/utils";
 
 const items = [
-  { href: "/admin", label: "Dashboard", icon: BarChart3 },
-  { href: "/admin/experiencias", label: "Experiencias", icon: Waypoints },
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/experiencias", label: "Paquetes", icon: Waypoints },
   { href: "/admin/categorias", label: "Categorías", icon: FolderTree },
   { href: "/admin/configuracion", label: "Configuración", icon: Settings },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const siteConfig = useSiteConfig();
+  const isActive = (href: string) => (href === "/admin" ? pathname === href : pathname.startsWith(href));
+
   return (
-    <div className="min-h-screen bg-[#f6f7f9]">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[240px_1fr] lg:px-8">
-        <aside className="h-fit rounded-lg border border-[#e4e7ec] bg-white p-3 shadow-sm">
-          <p className="px-3 py-2 text-sm font-bold text-[#021623]">Admin</p>
-          <nav className="mt-2 grid gap-1">
-            {items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-[#475467] hover:bg-[#f6f7f9] hover:text-[#021623]"
-              >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </aside>
-        <div>{children}</div>
-      </div>
+    <div className="min-h-screen bg-[#f4f5f7] lg:grid lg:grid-cols-[260px_1fr]">
+      <aside className="sticky top-0 z-30 flex flex-col bg-[#021623] text-white lg:h-screen">
+        <div className="flex items-center justify-between gap-3 px-5 py-4 lg:block lg:py-6">
+          <Link href="/admin" className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element -- logo configurable */}
+            <img src={siteConfig.logoMark} alt="" className="h-10 w-auto rounded-lg bg-[#fbf6ee] p-1" />
+            <span className="leading-tight">
+              <span className="block text-sm font-bold">{siteConfig.name}</span>
+              <span className="block text-xs text-white/55">Panel de administración</span>
+            </span>
+          </Link>
+          <form action={logoutAdmin} className="lg:hidden">
+            <button className="rounded-lg p-2 text-white/70 hover:bg-white/10 hover:text-white" aria-label="Cerrar sesión">
+              <LogOut className="h-5 w-5" />
+            </button>
+          </form>
+        </div>
+
+        <nav className="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-1 lg:flex-col lg:pb-0" aria-label="Administración">
+          {items.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
+                isActive(item.href)
+                  ? "bg-[#d4952a] text-[#021623]"
+                  : "text-white/70 hover:bg-white/10 hover:text-white",
+              )}
+            >
+              <item.icon className="h-4 w-4" />
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="hidden border-t border-white/10 p-3 lg:grid lg:gap-1">
+          <a
+            href="/"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+          >
+            <ExternalLink className="h-4 w-4" /> Ver sitio web
+          </a>
+          <form action={logoutAdmin}>
+            <button className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white">
+              <LogOut className="h-4 w-4" /> Cerrar sesión
+            </button>
+          </form>
+        </div>
+      </aside>
+
+      <main className="min-w-0 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+        <div className="mx-auto max-w-6xl">{children}</div>
+      </main>
     </div>
   );
-}
-
-export function AdminNotice({ error, saved }: { error?: string; saved?: string }) {
-  if (error) {
-    return (
-      <p role="alert" className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-        {error}
-      </p>
-    );
-  }
-
-  if (saved) {
-    return (
-      <p role="status" className="mt-6 rounded-xl border border-[#d9dfa8] bg-[#f4f6e3] px-4 py-3 text-sm font-medium text-[#5c6312]">
-        Cambios guardados.
-      </p>
-    );
-  }
-
-  return null;
 }

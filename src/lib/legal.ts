@@ -5,7 +5,7 @@
 // Los campos vacíos no se muestran en la web.
 export const legalEntity = {
   razonSocial: "", // p. ej. "Qusqueando Travel E.I.R.L."
-  ruc: "",
+  ruc: "20606136425",
   direccionFiscal: "",
   // Constancia de inscripción en el Directorio Nacional de Prestadores de
   // Servicios Turísticos Calificados (GERCETUR Cusco / MINCETUR).

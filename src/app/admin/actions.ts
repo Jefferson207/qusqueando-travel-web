@@ -39,7 +39,7 @@ function firstIssue(error: z.ZodError) {
 const imageUrl = z
   .string()
   .trim()
-  .refine(isAllowedImageUrl, "La imagen debe ser una URL https de Cloudinary, Unsplash o qusqueandotravel.com.");
+  .refine(isAllowedImageUrl, "Imagen no válida: súbela con el botón Subir o usa una ruta /images/...");
 
 const loginSchema = z.object({
   username: z.string().min(1),
@@ -101,8 +101,8 @@ export async function upsertExperience(formData: FormData) {
   await requireAdmin();
   const originalSlug = String(formData.get("originalSlug") ?? "");
   const backTo = originalSlug
-    ? `/admin/experiencias?edit=${encodeURIComponent(originalSlug)}`
-    : "/admin/experiencias";
+    ? `/admin/experiencias/${encodeURIComponent(originalSlug)}`
+    : "/admin/experiencias/nueva";
 
   const result = experienceSchema.safeParse({
     ...Object.fromEntries(formData),
@@ -124,7 +124,7 @@ export async function upsertExperience(formData: FormData) {
     .map((item) => item.trim())
     .filter(Boolean);
   if (gallery.some((url) => !isAllowedImageUrl(url))) {
-    fail(backTo, "Todas las imágenes de la galería deben ser URLs https de Cloudinary, Unsplash o qusqueandotravel.com.");
+    fail(backTo, "Alguna imagen de la galería no es válida: usa el botón Subir o una ruta /images/...");
   }
 
   const renamed = Boolean(parsed.originalSlug) && parsed.originalSlug !== slug;
@@ -235,27 +235,49 @@ export async function removeCategory(formData: FormData) {
   redirect("/admin/categorias?saved=1");
 }
 
-const siteConfigSchema = z.object({
-  name: z.string().trim().min(2, "Indica el nombre de la empresa."),
-  whatsappDisplay: z.string().trim().min(6, "Indica el WhatsApp visible."),
-  whatsapp: z
+const optionalUrl = (label: string) =>
+  z
     .string()
     .trim()
-    .regex(/^\+?\d{8,15}$/, "El WhatsApp técnico debe tener solo dígitos con código de país, por ejemplo +51916788768."),
+    .refine((value) => value === "" || /^https:\/\/\S+$/.test(value), `El enlace de ${label} debe empezar con https://`);
+
+const siteConfigSchema = z.object({
+  name: z.string().trim().min(2, "Indica el nombre de la empresa."),
+  whatsappDisplay: z.string().trim().min(6, "Indica el número de WhatsApp."),
   email: z.email("El correo no es válido."),
   address: z.string().trim().min(2, "Indica la dirección."),
-  heroTitle: z.string().trim().min(5, "El texto del hero es muy corto."),
-  heroSubtitle: z.string().trim().min(5, "El subtítulo del hero es muy corto."),
+  heroTitle: z.string().trim().min(5, "El título de la portada es muy corto."),
+  heroSubtitle: z.string().trim().min(5, "El subtítulo de la portada es muy corto."),
   heroImage: imageUrl,
+  aboutImage: imageUrl,
+  logoMark: imageUrl,
+  logoFull: imageUrl,
+  instagram: optionalUrl("Instagram"),
+  facebook: optionalUrl("Facebook"),
+  tiktok: optionalUrl("TikTok"),
+  youtube: optionalUrl("YouTube"),
 });
+
+// "+51 916 788 768", "916788768" o "51916788768" -> "+51916788768".
+function normalizeWhatsapp(value: string) {
+  let digits = value.replace(/\D/g, "");
+  if (digits.length === 9 && digits.startsWith("9")) digits = `51${digits}`;
+  return digits.length >= 8 && digits.length <= 15 ? `+${digits}` : null;
+}
 
 export async function updateSiteConfig(formData: FormData) {
   await requireAdmin();
   const result = siteConfigSchema.safeParse(Object.fromEntries(formData));
   if (!result.success) fail("/admin/configuracion", firstIssue(result.error));
 
+  const { instagram, facebook, tiktok, youtube, ...data } = result.data;
+  const whatsapp = normalizeWhatsapp(data.whatsappDisplay);
+  if (!whatsapp) {
+    fail("/admin/configuracion", "El número de WhatsApp no es válido. Ejemplo: +51 916 788 768");
+  }
+
   const current = await getSiteConfig();
-  await saveSiteConfig({ ...current, ...result.data });
+  await saveSiteConfig({ ...current, ...data, whatsapp, socials: { instagram, facebook, tiktok, youtube } });
   revalidatePath("/", "layout");
   redirect("/admin/configuracion?saved=1");
 }

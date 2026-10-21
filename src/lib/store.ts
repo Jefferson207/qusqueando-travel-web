@@ -4,10 +4,34 @@ import { unstable_rethrow } from "next/navigation";
 
 import type { Category, Experience } from "@/lib/data";
 import { categories as seedCategories, experiences as seedExperiences } from "@/lib/data";
+import experienceImages from "@/lib/experience-images.json";
 import { redis, redisKeys } from "@/lib/redis";
-import { siteConfig, type SiteConfig } from "@/lib/site";
+import { legacySiteDefaults, siteConfig, type SiteConfig } from "@/lib/site";
 
 export type StoredSiteConfig = SiteConfig;
+
+// Imágenes de ejemplo de la primera versión (Unsplash). Si una experiencia
+// guardada en Redis aún las usa, se muestran las fotos nuevas de
+// experience-images.json. Las imágenes cambiadas desde el admin se respetan.
+const legacySeedImages = new Set([
+  "https://images.unsplash.com/photo-1587595431973-160d0d94add1?q=80&w=1400&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1526392060635-9d6019884377?q=80&w=1400&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1531968455001-5c5272a41129?q=80&w=1400&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1627896157734-4d7d438b0896?q=80&w=1400&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1400&auto=format&fit=crop",
+]);
+const imagesBySlug: Record<string, string[] | undefined> = experienceImages;
+
+function withCurrentImages(experience: Experience): Experience {
+  const images = imagesBySlug[experience.slug];
+  if (!images) return experience;
+  const mainImage = legacySeedImages.has(experience.mainImage) ? images[0] : experience.mainImage;
+  const gallery = experience.gallery.every((url) => legacySeedImages.has(url)) ? images : experience.gallery;
+  return mainImage === experience.mainImage && gallery === experience.gallery
+    ? experience
+    : { ...experience, mainImage, gallery };
+}
 
 async function isSeeded() {
   return Boolean(await redis.exists(redisKeys.seeded));
@@ -22,7 +46,10 @@ export async function getExperiences() {
       ...slugs.map((slug) => redisKeys.experience(slug)),
     );
 
-    return rows.filter((row): row is Experience => Boolean(row)).sort((a, b) => a.order - b.order);
+    return rows
+      .filter((row): row is Experience => Boolean(row))
+      .map(withCurrentImages)
+      .sort((a, b) => a.order - b.order);
   } catch (error) {
     unstable_rethrow(error);
     console.error("[store] No se pudo leer experiencias de Redis, usando datos de ejemplo", error);
@@ -37,7 +64,7 @@ export async function getPublicExperiences() {
 export async function getExperience(slug: string) {
   try {
     const row = await redis.get<Experience>(redisKeys.experience(slug));
-    if (row) return row;
+    if (row) return withCurrentImages(row);
     if (await isSeeded()) return undefined;
   } catch (error) {
     unstable_rethrow(error);
@@ -88,7 +115,10 @@ export async function deleteCategory(slug: string) {
 
 export async function getSiteConfig(): Promise<SiteConfig> {
   try {
-    const stored = await redis.get<Partial<SiteConfig>>(redisKeys.siteConfig);
+    const stored = { ...(await redis.get<Partial<SiteConfig>>(redisKeys.siteConfig)) };
+    for (const key of Object.keys(legacySiteDefaults) as (keyof typeof legacySiteDefaults)[]) {
+      if (stored[key] === legacySiteDefaults[key]) delete stored[key];
+    }
     return {
       ...siteConfig,
       ...stored,

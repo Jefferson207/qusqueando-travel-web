@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
+import { motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
 import { buttonClassName } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSiteConfig } from "@/components/site-config-provider";
@@ -22,44 +23,71 @@ export function Navbar() {
   const pathname = usePathname();
   const siteConfig = useSiteConfig();
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
   const height = useTransform(scrollY, [0, 120], [92, 76]);
-  const shadow = useTransform(
-    scrollY,
-    [0, 120],
-    ["0 1px 0 rgba(255,255,255,0.60)", "0 14px 34px rgba(2,22,35,0.08)"],
-  );
+  useMotionValueEvent(scrollY, "change", (value) => setScrolled(value > 40));
+
+  // En el inicio el menú flota transparente sobre la foto del hero y se vuelve
+  // blanco al hacer scroll. En el resto de páginas siempre es blanco.
+  const isHome = pathname === "/";
+  const transparent = isHome && !scrolled && !isOpen;
 
   return (
-    <motion.header
-      style={{ boxShadow: shadow }}
-      className="sticky top-0 z-50 border-b border-white/55 bg-white/90 backdrop-blur-xl"
+    <header
+      className={cn(
+        "top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300",
+        isHome ? "fixed inset-x-0" : "sticky",
+        transparent
+          ? "border-b border-transparent bg-transparent"
+          : "border-b border-[#eee3cf] bg-white/92 shadow-[0_14px_34px_rgba(2,22,35,0.08)] backdrop-blur-xl",
+      )}
     >
+      {transparent ? (
+        <div className="pointer-events-none absolute inset-0 -z-10 h-[140%] bg-gradient-to-b from-[#021623]/55 via-[#021623]/15 to-transparent" />
+      ) : null}
       <motion.div
         style={{ height }}
         className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
       >
         <Link href="/" className="group flex min-w-0 items-center gap-3" onClick={() => setIsOpen(false)}>
-          <Image
-            src="/logo-emblem.png"
-            alt=""
-            width={225}
-            height={160}
-            priority
-            className="h-14 w-auto shrink-0 object-contain sm:h-16 transition duration-300 group-hover:-translate-y-0.5"
-          />
+          <span
+            className={cn(
+              "shrink-0 rounded-2xl transition duration-300 group-hover:-translate-y-0.5",
+              transparent && "bg-[#fbf6ee]/95 px-1.5 py-1 shadow-[0_8px_24px_rgba(0,0,0,0.25)]",
+            )}
+          >
+            <Image
+              src={siteConfig.logoMark}
+              alt=""
+              width={225}
+              height={160}
+              priority
+              className={cn("w-auto object-contain transition-all duration-300", transparent ? "h-12 sm:h-14" : "h-14 sm:h-16")}
+            />
+          </span>
           <span className="flex min-w-0 flex-col leading-none">
-            <span className="truncate text-lg font-extrabold uppercase tracking-[0.04em] text-[#021623] sm:text-2xl">
+            <span
+              className={cn(
+                "truncate text-lg font-extrabold uppercase tracking-[0.04em] transition-colors sm:text-2xl",
+                transparent ? "text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]" : "text-[#021623]",
+              )}
+            >
               Qusqueando
             </span>
-            <span className="mt-1.5 text-[0.7rem] font-bold uppercase tracking-[0.5em] sm:text-xs text-[#b97a0b]">
+            <span
+              className={cn(
+                "mt-1.5 text-[0.7rem] font-bold uppercase tracking-[0.5em] transition-colors sm:text-xs",
+                transparent ? "text-[#f3c77a]" : "text-[#b97a0b]",
+              )}
+            >
               Travel
             </span>
             <span className="sr-only">{siteConfig.name}</span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex" aria-label="Navegación principal">
+        <nav className="hidden items-center gap-8 md:flex lg:gap-10" aria-label="Navegación principal">
           {navItems.map((item) => {
             const active = pathname === item.href;
 
@@ -68,8 +96,15 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "group/link relative py-2 text-sm font-semibold transition duration-300 hover:text-[#021623]",
-                  active ? "text-[#021623]" : "text-[#475467]",
+                  "group/link relative py-2 text-base font-semibold tracking-[0.01em] transition duration-300 lg:text-[1.0625rem]",
+                  transparent
+                    ? cn(
+                        "[text-shadow:0_1px_10px_rgba(0,0,0,0.6)]",
+                        active ? "text-white" : "text-white/90 hover:text-white",
+                      )
+                    : active
+                      ? "text-[#021623]"
+                      : "text-[#475467] hover:text-[#021623]",
                 )}
               >
                 {item.label}
@@ -89,13 +124,19 @@ export function Navbar() {
             href={whatsappUrl(siteConfig.whatsapp)}
             target="_blank"
             rel="noreferrer"
-            className={buttonClassName("primary", "hidden h-10 px-6 sm:inline-flex")}
+            className={buttonClassName("primary", "hidden h-11 px-6 text-[0.95rem] sm:inline-flex")}
           >
+            <WhatsappIcon className="h-[1.15rem] w-[1.15rem]" />
             Reservar ahora
           </a>
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#e4e7ec] bg-white/90 shadow-sm transition hover:scale-105 hover:bg-white md:hidden"
+            className={cn(
+              "inline-flex h-10 w-10 items-center justify-center rounded-full border shadow-sm transition hover:scale-105 md:hidden",
+              transparent
+                ? "border-white/40 bg-white/10 text-white backdrop-blur hover:bg-white/20"
+                : "border-[#e4e7ec] bg-white/90 text-[#021623] hover:bg-white",
+            )}
             aria-label={isOpen ? "Cerrar navegación" : "Abrir navegación"}
             aria-expanded={isOpen}
             aria-controls="mobile-navigation"
@@ -135,11 +176,12 @@ export function Navbar() {
               className={buttonClassName("primary", "mt-2 w-full")}
               onClick={() => setIsOpen(false)}
             >
+              <WhatsappIcon className="h-4 w-4" />
               Reservar ahora
             </a>
           </div>
         </nav>
       ) : null}
-    </motion.header>
+    </header>
   );
 }

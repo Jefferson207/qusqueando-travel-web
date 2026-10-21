@@ -40,21 +40,21 @@ export function ExperienceFilters({
 
   return (
     <div>
-      <div className="surface-card grid gap-4 p-4 md:grid-cols-[1fr_auto]">
+      <div className="relative z-10 grid gap-3 rounded-3xl border border-white/70 bg-white/95 p-3 shadow-[0_30px_80px_rgba(2,22,35,0.16)] backdrop-blur md:grid-cols-[1fr_auto]">
         <label className="relative block">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#98a2b3]" />
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Buscar por nombre, ubicación o categoría"
-            className="field surface-content h-12 pl-11"
+            className="field h-12 border-transparent bg-[#faf6ef] pl-11"
           />
         </label>
-        <div className="surface-content flex flex-col gap-3 sm:flex-row">
+        <div className="flex flex-col gap-3 sm:flex-row">
           <select
             value={category}
             onChange={(event) => setCategory(event.target.value)}
-            className="field h-12"
+            className="field h-12 border-transparent bg-[#faf6ef] font-semibold"
           >
             <option>Todas</option>
             {categories.map((item) => (
@@ -73,15 +73,18 @@ export function ExperienceFilters({
           ) : null}
         </div>
       </div>
+      <p className="mt-10 text-sm text-[#667085]">
+        {filtered.length} {filtered.length === 1 ? "experiencia encontrada" : "experiencias encontradas"}
+      </p>
       {filtered.length > 0 ? (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((experience) => (
             <ExperienceCard key={experience.id} experience={experience} />
           ))}
         </div>
       ) : (
-        <div className="surface-card mt-8 p-8 text-center">
-          <h2 className="text-xl font-bold text-[#021623]">No encontramos experiencias con esos filtros</h2>
+        <div className="mt-4 rounded-3xl border border-[#efe6d6] bg-white p-10 text-center">
+          <h2 className="font-display text-2xl font-semibold text-[#021623]">No encontramos experiencias con esos filtros</h2>
           <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[#667085]">
             Prueba con otra ubicación, categoría o deja que un asesor te recomiende una ruta disponible.
           </p>

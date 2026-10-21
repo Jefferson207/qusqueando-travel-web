@@ -4,6 +4,7 @@ import { Check, Clock, MapPin, Mountain, ShieldCheck, Users, X } from "lucide-re
 import { ExperienceCard } from "@/components/experience-card";
 import { ExperienceGallery } from "@/components/experience-gallery";
 import { MotionSection } from "@/components/motion-section";
+import { PageHero, SectionHeading } from "@/components/page-hero";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { experiences as seedExperiences } from "@/lib/data";
@@ -48,30 +49,51 @@ export default async function ExperienceDetailPage({ params }: PageProps) {
   ].slice(0, 3);
 
   return (
-    <article className="bg-[#fbf4ea]">
+    <article className="bg-[#fbf6ee]">
       {experience.status === "ACTIVE" && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(experienceSchema(experience)).replace(/</g, "\\u003c") }} />}
-      <section className="relative overflow-hidden pb-12 pt-10">
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_8%,rgba(212,149,42,0.16),transparent_30%),radial-gradient(circle_at_86%_22%,rgba(2,22,35,0.10),transparent_24%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 max-w-4xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#b97a0b]">
-              {experience.category}
-            </p>
-            <h1 className="mt-3 text-4xl font-bold text-[#021623] sm:text-5xl">{experience.name}</h1>
-            <p className="mt-5 text-lg leading-8 text-[#667085]">{experience.shortDescription}</p>
-          </div>
+      <PageHero
+        image={experience.mainImage}
+        imageAlt={experience.name}
+        eyebrow={experience.category}
+        title={experience.name}
+        description={experience.shortDescription}
+      >
+        <div className="mt-6 flex flex-wrap gap-2 text-sm font-medium">
+          {[
+            [Clock, experience.duration],
+            [MapPin, experience.location],
+            [Users, experience.modality],
+          ].map(([Icon, value]) => (
+            <span key={String(value)} className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3.5 py-1.5 backdrop-blur">
+              <Icon className="h-4 w-4 text-[#f3c77a]" />
+              {String(value)}
+            </span>
+          ))}
+        </div>
+        <div className="mt-7 flex flex-wrap items-center gap-5">
+          <WhatsAppButton experienceName={experience.name} experienceSlug={experience.slug} className="h-12 px-7" />
+          <p className="text-white/85">
+            Desde{" "}
+            <span className="font-display text-3xl font-semibold text-white">
+              {formatCurrency(experience.priceFrom, experience.currency)}
+            </span>{" "}
+            <span className="text-sm">por persona</span>
+          </p>
+        </div>
+      </PageHero>
+
+      <section className="relative pb-6 pt-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ExperienceGallery images={experience.gallery} title={experience.name} />
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-12 px-4 pb-24 sm:px-6 lg:grid-cols-[1fr_380px] lg:px-8">
+      <section className="mx-auto grid max-w-7xl gap-12 px-4 pb-24 pt-6 sm:px-6 lg:grid-cols-[1fr_380px] lg:px-8">
         <div>
           <MotionSection>
-            <div className="surface-card p-6 sm:p-8">
-              <div className="surface-content">
-              <h2 className="text-2xl font-bold text-[#021623]">Descripción</h2>
-              <p className="mt-4 text-lg leading-8 text-[#667085]">{experience.fullDescription}</p>
-              </div>
+            <div className="rounded-3xl border border-[#efe6d6] bg-white p-6 shadow-[0_14px_40px_rgba(2,22,35,0.06)] sm:p-8">
+              <SectionHeading eyebrow="La experiencia" title="Descripción" />
+              <p className="mt-4 text-lg leading-8 text-[#475467]">{experience.fullDescription}</p>
             </div>
           </MotionSection>
 
@@ -84,17 +106,15 @@ export default async function ExperienceDetailPage({ params }: PageProps) {
             ].map(([Icon, label, value]) => (
               <div
                 key={String(label)}
-                className="surface-card surface-hover group p-5"
+                className="group flex items-center gap-4 rounded-2xl border border-[#efe6d6] bg-white p-5 transition hover:-translate-y-0.5 hover:border-[#d4952a]"
               >
-                <div className="surface-content">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fdf0dc] text-[#b97a0b] transition group-hover:scale-105">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#e9d3a8] bg-[#fdf0dc] text-[#b97a0b] transition group-hover:bg-[#d4952a] group-hover:text-white">
                   <Icon className="h-5 w-5" />
-                </div>
-                <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-[#98a2b3]">
-                  {String(label)}
-                </p>
-                <p className="mt-1 font-semibold text-[#021623]">{String(value)}</p>
-                </div>
+                </span>
+                <span>
+                  <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-[#98a2b3]">{String(label)}</span>
+                  <span className="mt-0.5 block font-semibold text-[#021623]">{String(value)}</span>
+                </span>
               </div>
             ))}
           </div>
@@ -103,70 +123,67 @@ export default async function ExperienceDetailPage({ params }: PageProps) {
           <DetailSection title="No incluye" items={experience.excludes} icon="x" />
 
           <section className="mt-12">
-            <h2 className="text-2xl font-bold text-[#021623]">Itinerario</h2>
-            <div className="mt-6 grid gap-4">
+            <SectionHeading eyebrow="Paso a paso" title="Itinerario" />
+            <ol className="relative mt-6 grid gap-4 border-l-2 border-dashed border-[#e9d3a8] pl-6">
               {experience.itinerary.map((item, index) => (
-                <div
-                  key={item.title}
-                  className="surface-card p-5"
-                >
-                  <div className="surface-content">
-                  <p className="text-sm font-semibold text-[#b97a0b]">Día {index + 1}</p>
-                  <h3 className="mt-1 font-bold text-[#021623]">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-[#667085]">{item.description}</p>
-                  </div>
-                </div>
+                <li key={`${item.title}-${index}`} className="relative rounded-2xl border border-[#efe6d6] bg-white p-5">
+                  <span className="absolute -left-[2.35rem] top-5 flex h-7 w-7 items-center justify-center rounded-full bg-[#d4952a] text-xs font-bold text-[#021623] ring-4 ring-[#fbf6ee]">
+                    {index + 1}
+                  </span>
+                  <h3 className="font-semibold text-[#021623]">{item.title}</h3>
+                  <p className="mt-1.5 text-sm leading-6 text-[#667085]">{item.description}</p>
+                </li>
               ))}
-            </div>
+            </ol>
           </section>
 
           <section className="mt-12">
-            <h2 className="text-2xl font-bold text-[#021623]">Preguntas frecuentes</h2>
-            <div className="mt-6 grid gap-4">
+            <SectionHeading eyebrow="Dudas" title="Preguntas frecuentes" />
+            <div className="mt-6 grid gap-3">
               {experience.faqs.map((faq) => (
-                <details
-                  key={faq.question}
-                  className="surface-card p-5"
-                >
-                  <summary className="surface-content cursor-pointer font-semibold text-[#021623]">{faq.question}</summary>
-                  <p className="surface-content mt-3 text-sm leading-6 text-[#667085]">{faq.answer}</p>
+                <details key={faq.question} className="group rounded-2xl border border-[#efe6d6] bg-white p-5 open:border-[#d4952a]">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-[#021623]">
+                    {faq.question}
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#fdf0dc] text-[#b97a0b] transition group-open:rotate-45">+</span>
+                  </summary>
+                  <p className="mt-3 text-sm leading-6 text-[#667085]">{faq.answer}</p>
                 </details>
               ))}
             </div>
           </section>
         </div>
 
-        <aside className="surface-card h-fit p-6 backdrop-blur lg:sticky lg:top-24">
-          <div className="surface-content">
+        <aside className="h-fit rounded-3xl border border-[#efe6d6] bg-white p-6 shadow-[0_24px_60px_rgba(2,22,35,0.1)] lg:sticky lg:top-28">
           <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#021623] text-[#d4952a]">
-              <ShieldCheck className="h-5 w-5" />
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#021623] text-[#e6a93e]">
+              <ShieldCheck className="h-6 w-6" />
             </span>
             <div>
               <p className="text-sm text-[#667085]">Precio desde</p>
-              <p className="text-3xl font-bold text-[#021623]">
+              <p className="font-display text-3xl font-semibold text-[#021623]">
                 {formatCurrency(experience.priceFrom, experience.currency)}
               </p>
             </div>
           </div>
-          <WhatsAppButton experienceName={experience.name} experienceSlug={experience.slug} className="mt-7 w-full" />
+          <WhatsAppButton experienceName={experience.name} experienceSlug={experience.slug} className="mt-7 h-12 w-full" />
           <p className="mt-4 text-xs leading-5 text-[#667085]">
             Respuesta directa por WhatsApp para confirmar disponibilidad, horarios y modalidad.
           </p>
-          </div>
         </aside>
       </section>
 
-      <section className="bg-white py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-[#021623]">Experiencias relacionadas</h2>
-          <div className="mt-8 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((item) => (
-              <ExperienceCard key={item.id} experience={item} />
-            ))}
+      {related.length ? (
+        <section className="relative border-t border-[#efe6d6] bg-[#f6ecdc]/60 py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionHeading eyebrow="Sigue explorando" title="Experiencias" accent="relacionadas" />
+            <div className="mt-10 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((item) => (
+                <ExperienceCard key={item.id} experience={item} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
     </article>
   );
 }
@@ -183,9 +200,9 @@ function DetailSection({
   const Icon = icon === "check" ? Check : X;
 
   return (
-    <section className="surface-card mt-12 p-6 sm:p-8">
-      <div className="surface-content">
-      <h2 className="text-2xl font-bold text-[#021623]">{title}</h2>
+    <section className="mt-8 rounded-3xl border border-[#efe6d6] bg-white p-6 sm:p-8">
+      <div>
+      <h2 className="font-display text-2xl font-semibold text-[#021623]">{title}</h2>
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
         {items.map((item) => (
           <div key={item} className="flex items-center gap-3 text-sm text-[#475467]">

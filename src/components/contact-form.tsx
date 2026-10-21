@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MessageCircle } from "lucide-react";
+import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
 import { buttonClassName } from "@/components/ui/button";
 import { useSiteConfig } from "@/components/site-config-provider";
 import { siteDomain, whatsappMessageUrl } from "@/lib/site";
@@ -41,8 +41,12 @@ export function ContactForm() {
   }
 
   return (
-    <form className="surface-card p-6 sm:p-7">
-      <div className="surface-content grid gap-5">
+    <form className="h-fit rounded-3xl border border-[#efe6d6] bg-white p-6 shadow-[0_24px_60px_rgba(2,22,35,0.08)] sm:p-8">
+      <h2 className="font-display text-3xl font-semibold text-[#021623]">
+        Escríbenos <span className="italic text-[#b97a0b]">tu idea</span>
+      </h2>
+      <p className="mt-2 text-sm text-[#667085]">Completa tus datos y te llevamos a WhatsApp con el mensaje listo para enviar.</p>
+      <div className="mt-6 grid gap-5">
         <label className="grid gap-2 text-sm font-medium text-[#344054]">
           Nombre
           <input
@@ -81,7 +85,7 @@ export function ContactForm() {
           />
         </label>
         <a href={whatsappHref} target="_blank" rel="noreferrer" className={buttonClassName("primary", "w-full")}>
-          <MessageCircle className="h-4 w-4" />
+          <WhatsappIcon className="h-4 w-4" />
           Enviar por WhatsApp
         </a>
       </div>

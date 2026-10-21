@@ -28,16 +28,21 @@ export function Navbar() {
   const height = useTransform(scrollY, [0, 120], [92, 76]);
   useMotionValueEvent(scrollY, "change", (value) => setScrolled(value > 40));
 
-  // En el inicio el menú flota transparente sobre la foto del hero y se vuelve
-  // blanco al hacer scroll. En el resto de páginas siempre es blanco.
-  const isHome = pathname === "/";
-  const transparent = isHome && !scrolled && !isOpen;
+  // En las páginas con portada fotográfica el menú flota transparente sobre la
+  // foto y se vuelve blanco al hacer scroll. En el resto siempre es blanco.
+  const hasHero =
+    pathname === "/" ||
+    pathname === "/nosotros" ||
+    pathname === "/contacto" ||
+    pathname === "/experiencias" ||
+    pathname.startsWith("/experiencias/");
+  const transparent = hasHero && !scrolled && !isOpen;
 
   return (
     <header
       className={cn(
         "top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300",
-        isHome ? "fixed inset-x-0" : "sticky",
+        hasHero ? "fixed inset-x-0" : "sticky",
         transparent
           ? "border-b border-transparent bg-transparent"
           : "border-b border-[#eee3cf] bg-white/92 shadow-[0_14px_34px_rgba(2,22,35,0.08)] backdrop-blur-xl",

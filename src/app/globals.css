@@ -72,24 +72,27 @@ body {
   color: #b97a0b;
 }
 
-.field {
-  min-height: 44px;
-  width: 100%;
-  border-radius: 0.75rem;
-  border: 1px solid #d0d5dd;
-  background: #ffffff;
-  padding: 0.625rem 1rem;
-  font-size: 0.875rem;
-  outline: none;
-  transition:
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    background-color 180ms ease;
-}
+/* En la capa de componentes para que las utilidades de Tailwind (pl-11, h-12...) puedan sobrescribirla. */
+@layer components {
+  .field {
+    min-height: 44px;
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid #d0d5dd;
+    background: #ffffff;
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      background-color 180ms ease;
+  }
 
-.field:focus {
-  border-color: #d4952a;
-  box-shadow: 0 0 0 2px rgb(212 149 42 / 20%);
+  .field:focus {
+    border-color: #d4952a;
+    box-shadow: 0 0 0 2px rgb(212 149 42 / 20%);
+  }
 }
 
 ::selection {

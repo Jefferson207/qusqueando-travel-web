@@ -5,18 +5,22 @@ import { siteConfig, type SiteConfig } from "@/lib/site";
 export const siteUrl = "https://qusqueandotravel.com";
 export const publicPaths = ["/", "/nosotros", "/experiencias", "/contacto", "/politica-de-privacidad", "/politica-de-proteccion-de-datos-personales", "/terminos-y-condiciones", "/medios-de-pago", "/politica-de-cookies", "/afiche-esnna-mincetur", "/libro-de-reclamaciones"];
 
-type PageSeo = { path: string; title: string; description: string; image?: string; noindex?: boolean };
+type PageSeo = { path: string; title: string; description: string; noindex?: boolean };
 
 const absoluteUrl = (url: string) => (url.startsWith("/") ? `${siteUrl}${url}` : url);
 
-export function pageMetadata({ path, title, description, image = siteConfig.heroImage, noindex = false }: PageSeo): Metadata {
+// Imagen al compartir el enlace (WhatsApp, Facebook...): logo sobre fondo
+// blanco con la dirección de la web. 1200 × 630 px.
+const shareImage = { url: `${siteUrl}/og-image.jpg`, width: 1200, height: 630 };
+
+export function pageMetadata({ path, title, description, noindex = false }: PageSeo): Metadata {
   const fullTitle = title.endsWith(`| ${siteConfig.name}`) ? title : `${title} | ${siteConfig.name}`;
   return {
     title: { absolute: fullTitle }, description,
     alternates: { canonical: noindex ? null : `${siteUrl}${path}` },
     robots: { index: !noindex, follow: true, googleBot: { index: !noindex, follow: true, "max-image-preview": "large" } },
-    openGraph: { title: fullTitle, description, url: `${siteUrl}${path}`, siteName: siteConfig.name, locale: "es_PE", type: "website", images: [{ url: absoluteUrl(image), alt: title }] },
-    twitter: { card: "summary_large_image", title: fullTitle, description, images: [{ url: absoluteUrl(image), alt: title }] },
+    openGraph: { title: fullTitle, description, url: `${siteUrl}${path}`, siteName: siteConfig.name, locale: "es_PE", type: "website", images: [{ ...shareImage, alt: siteConfig.name }] },
+    twitter: { card: "summary_large_image", title: fullTitle, description, images: [{ ...shareImage, alt: siteConfig.name }] },
   };
 }
 
@@ -30,7 +34,6 @@ export function experienceMetadata(experience: Experience) {
     path: `/experiencias/${encodeURIComponent(experience.slug)}`,
     title: experience.seoTitle || experience.name,
     description: experience.seoDescription || experience.shortDescription,
-    image: experience.mainImage,
     noindex: experience.status !== "ACTIVE",
   });
 }

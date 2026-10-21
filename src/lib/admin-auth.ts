@@ -2,17 +2,24 @@ import "server-only";
 
 import { cookies, headers } from "next/headers";
 import { redirect, unstable_rethrow } from "next/navigation";
-import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { redis, redisKeys } from "@/lib/redis";
 
 export const adminCookieName = "qt_admin_session";
+
+// En Redis se guarda la firma del token (HMAC con SESSION_SECRET), no el token
+// en sí: quien lea la base no puede reutilizar una sesión.
+function sessionKey(token: string) {
+  const secret = process.env.SESSION_SECRET || process.env.ADMIN_PASSWORD || "";
+  return redisKeys.adminSession(createHmac("sha256", secret).update(token).digest("hex"));
+}
 
 const maxLoginAttempts = 5;
 const loginWindowSeconds = 60 * 15;
 
 export async function createAdminSession() {
   const token = randomBytes(32).toString("hex");
-  await redis.set(redisKeys.adminSession(token), { createdAt: Date.now() }, { ex: 60 * 60 * 8 });
+  await redis.set(sessionKey(token), { createdAt: Date.now() }, { ex: 60 * 60 * 8 });
 
   const cookieStore = await cookies();
   cookieStore.set(adminCookieName, token, {
@@ -28,7 +35,7 @@ export async function destroyAdminSession() {
   const cookieStore = await cookies();
   const token = cookieStore.get(adminCookieName)?.value;
   if (token) {
-    await redis.del(redisKeys.adminSession(token));
+    await redis.del(sessionKey(token));
   }
   cookieStore.delete(adminCookieName);
 }
@@ -39,7 +46,7 @@ export async function isAdminAuthenticated() {
   if (!token) return false;
 
   try {
-    return Boolean(await redis.get(redisKeys.adminSession(token)));
+    return Boolean(await redis.get(sessionKey(token)));
   } catch (error) {
     unstable_rethrow(error);
     return false;

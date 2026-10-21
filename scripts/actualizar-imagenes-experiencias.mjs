@@ -39,7 +39,7 @@ async function redis(...command) {
 const images = JSON.parse(readFileSync(new URL("../src/lib/experience-images.json", import.meta.url), "utf8"));
 
 for (const [slug, gallery] of Object.entries(images)) {
-  const key = `qt:experience:${slug}`;
+  const key = `${env.CATALOG_KEY || "qt"}:experience:${slug}`;
   const raw = await redis("GET", key);
   if (!raw) {
     console.log(`- ${slug}: no está en Redis, se omite`);

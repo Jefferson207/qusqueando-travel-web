@@ -1,8 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Headphones, Info, MapPinned, MessageCircle, UserRound, X } from "lucide-react";
+import { useState } from "react";
+import { Headphones, Info, MapPinned, UserRound, X } from "lucide-react";
+import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
 import { useSiteConfig } from "@/components/site-config-provider";
 import { whatsappMessages, whatsappMessageUrl } from "@/lib/site";
 
@@ -25,18 +26,6 @@ export function FloatingWhatsappChat() {
   const pathname = usePathname();
   const siteConfig = useSiteConfig();
   const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    if (pathname.startsWith("/admin")) {
-      return;
-    }
-
-    const timer = window.setTimeout(() => {
-      setIsOpen(true);
-    }, 2000);
-
-    return () => window.clearTimeout(timer);
-  }, [pathname]);
 
   if (pathname.startsWith("/admin")) {
     return null;
@@ -112,7 +101,7 @@ export function FloatingWhatsappChat() {
         aria-label={isOpen ? "Cerrar chat de WhatsApp" : "Abrir chat de WhatsApp"}
         aria-expanded={isOpen}
       >
-        {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-7 w-7" />}
+        {isOpen ? <X className="h-6 w-6" /> : <WhatsappIcon className="h-8 w-8" />}
       </button>
     </div>
   );

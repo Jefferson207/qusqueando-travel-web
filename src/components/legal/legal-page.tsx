@@ -1,7 +1,7 @@
 import { Building2, CalendarDays } from "lucide-react";
 import { legalEntity, type LegalDocument } from "@/lib/legal";
 import type { SiteConfig } from "@/lib/site";
-import { getSiteConfig } from "@/lib/store";
+import { useSiteConfig } from "@/components/site-config-provider";
 import { slugify } from "@/lib/utils";
 
 function fill(text: string, config: SiteConfig) {
@@ -11,8 +11,8 @@ function fill(text: string, config: SiteConfig) {
     .replaceAll("{address}", config.address);
 }
 
-export async function LegalPage({ title, description, sections }: LegalDocument) {
-  const config = await getSiteConfig();
+export function LegalPage({ title, description, sections }: LegalDocument) {
+  const config = useSiteConfig();
 
   const identity = [
     ["Nombre comercial", config.name],

@@ -1,5 +1,3 @@
-"use client";
-
 import { useMemo, useState } from "react";
 import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
 import { buttonClassName } from "@/components/ui/button";

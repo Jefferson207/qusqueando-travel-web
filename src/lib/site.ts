@@ -12,14 +12,19 @@ export const siteConfig = {
   // Imagen de fondo de la sección "¿Por qué elegir Qusqueando?".
   aboutImage: "/images/viajera-machu-picchu.jpg",
   // Ícono del menú superior y logo completo del pie de página.
-  logoMark: "/logo-emblem.png",
-  logoFull: "/logo.png",
+  logoMark: "/Logo andino Qusqueando Travel-1.png",
+  logoFull: "/Logo andino Qusqueando Travel-1.png",
   socials: {
     instagram: "https://instagram.com/qusqueandotravel",
     facebook: "https://facebook.com/qusqueandotravel",
     tiktok: "",
     youtube: "",
   },
+  // Precios en inglés (dólares) e italiano (euros). Tipo de cambio en soles;
+  // 0 = automático del día. El % adicional se suma al precio convertido.
+  fxUsdRate: 0,
+  fxEurRate: 0,
+  fxSurcharge: 0,
 };
 
 export type SiteConfig = typeof siteConfig;

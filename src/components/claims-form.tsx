@@ -1,10 +1,9 @@
-"use client";
-
 import type { FormEvent } from "react";
 import { BookOpen, FileText, Send, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { legalEntity } from "@/lib/legal";
 import type { SiteConfig } from "@/lib/site";
+import { Select } from "@/components/ui/pickers";
 
 type FormElement = HTMLFormElement & {
   incidentAt: HTMLInputElement;
@@ -85,14 +84,7 @@ export function ClaimsForm({ siteConfig }: { siteConfig: SiteConfig }) {
             <input name="consumerName" placeholder="Nombres y apellidos" className="field rounded-xl" required />
           </Field>
           <Field label="Tipo de documento">
-            <select name="documentType" className="field rounded-xl" required defaultValue="">
-              <option value="" disabled>
-                Seleccionar
-              </option>
-              <option>DNI</option>
-              <option>Carné de extranjería</option>
-              <option>Pasaporte</option>
-            </select>
+            <Select name="documentType" required placeholder="Seleccionar" options={["DNI", "Carné de extranjería", "Pasaporte"]} buttonClassName="rounded-xl" />
           </Field>
           <Field label="Número de documento">
             <input name="documentNumber" placeholder="Número de documento" className="field rounded-xl" required />
@@ -116,10 +108,15 @@ export function ClaimsForm({ siteConfig }: { siteConfig: SiteConfig }) {
       >
         <div className="grid gap-5 md:grid-cols-2">
           <Field label="Tipo de comunicación">
-            <select name="communicationType" className="field rounded-xl" defaultValue="Reclamo">
-              <option>Reclamo</option>
-              <option>Queja</option>
-            </select>
+            <Select
+              name="communicationType"
+              defaultValue="Reclamo"
+              buttonClassName="rounded-xl"
+              options={[
+                { value: "Reclamo", label: "Reclamo", hint: "Disconformidad con el servicio contratado" },
+                { value: "Queja", label: "Queja", hint: "Malestar por la atención recibida" },
+              ]}
+            />
           </Field>
           <Field label="Servicio contratado">
             <input name="service" placeholder="Nombre de la experiencia o paquete" className="field rounded-xl" required />

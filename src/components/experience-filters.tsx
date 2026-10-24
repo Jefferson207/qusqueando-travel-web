@@ -1,8 +1,7 @@
-"use client";
-
 import { useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
 import { ExperienceCard } from "@/components/experience-card";
+import { Select } from "@/components/ui/pickers";
 import type { Category, Experience } from "@/lib/data";
 
 export function ExperienceFilters({
@@ -51,16 +50,20 @@ export function ExperienceFilters({
           />
         </label>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <select
+          <Select
+            aria-label="Categoría"
             value={category}
-            onChange={(event) => setCategory(event.target.value)}
-            className="field h-12 border-transparent bg-[#faf6ef] font-semibold"
-          >
-            <option>Todas</option>
-            {categories.map((item) => (
-              <option key={item.id}>{item.name}</option>
-            ))}
-          </select>
+            onChange={setCategory}
+            className="sm:w-60"
+            buttonClassName="h-12 border-transparent bg-[#faf6ef] font-semibold"
+            options={[
+              { value: "Todas", label: "Todas las categorías", hint: `${experiences.length} experiencias` },
+              ...categories.map((item) => {
+                const list = experiences.filter((experience) => experience.category === item.name);
+                return { value: item.name, label: item.name, hint: `${list.length} ${list.length === 1 ? "experiencia" : "experiencias"}`, image: list[0]?.mainImage };
+              }),
+            ]}
+          />
           {hasFilters ? (
             <button
               type="button"

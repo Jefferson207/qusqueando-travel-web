@@ -1,9 +1,10 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from "@/components/image";
+import Link from "@/components/link";
 import { ArrowRight, Clock, Flame, Mountain, Users } from "lucide-react";
 import { IntiSun } from "@/components/icons/inti-sun";
 import type { Experience } from "@/lib/data";
-import { cn, formatCurrency } from "@/lib/utils";
+import { money } from "@/lib/money";
+import { cn } from "@/lib/utils";
 
 export function ExperienceCard({ experience, className }: { experience: Experience; className?: string }) {
   return (
@@ -59,7 +60,7 @@ export function ExperienceCard({ experience, className }: { experience: Experien
           <div>
             <p className="text-xs text-[#667085]">Desde</p>
             <p className="text-xl font-bold text-[#021623]">
-              {formatCurrency(experience.priceFrom, experience.currency)}
+              <span translate="no" className="notranslate">{money(experience.priceFrom, experience.currency)}</span>
             </p>
           </div>
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#d4952a] text-[#021623] shadow-[0_10px_24px_rgba(212,149,42,0.35)] transition duration-300 group-hover:translate-x-0.5 group-hover:bg-[#b97a0b] group-hover:text-white">

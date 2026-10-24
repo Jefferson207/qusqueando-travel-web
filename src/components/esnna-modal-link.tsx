@@ -1,8 +1,6 @@
-"use client";
-
 import { useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import Image from "@/components/image";
+import Link from "@/components/link";
 import { X } from "lucide-react";
 
 // Abre el afiche ESNNA en un modal. Sin JavaScript (o con Ctrl/Cmd+clic)

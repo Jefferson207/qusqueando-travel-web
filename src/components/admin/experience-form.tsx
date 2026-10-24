@@ -1,11 +1,12 @@
-import Link from "next/link";
-import { Save } from "lucide-react";
-import { upsertExperience } from "@/app/admin/actions";
+import Link from "@/components/link";
+import { Loader2, Save } from "lucide-react";
 import { GalleryField } from "@/components/admin/gallery-field";
 import { ImageField } from "@/components/admin/image-field";
 import { AdminPanel, adminPrimaryButton, adminSecondaryButton } from "@/components/admin/admin-ui";
 import type { Category, Experience } from "@/lib/data";
 import { currencies } from "@/lib/utils";
+import { Select } from "@/components/ui/pickers";
+import { PairListField, TextListField } from "@/components/admin/list-editors";
 
 const emptyExperience: Partial<Experience> = {
   name: "",
@@ -34,14 +35,18 @@ const emptyExperience: Partial<Experience> = {
 export function ExperienceForm({
   experience,
   categories,
+  onSubmit,
+  saving,
 }: {
   experience?: Experience;
   categories: Category[];
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  saving: boolean;
 }) {
   const value = { ...emptyExperience, ...experience };
 
   return (
-    <form action={upsertExperience} className="mt-8 grid gap-6 pb-24">
+    <form onSubmit={onSubmit} className="mt-8 grid gap-6 pb-24">
       <input type="hidden" name="originalSlug" defaultValue={experience?.slug ?? ""} />
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -52,11 +57,7 @@ export function ExperienceForm({
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Categoría">
-                <select name="category" defaultValue={value.category || categories[0]?.name} className="field">
-                  {categories.map((category) => (
-                    <option key={category.id}>{category.name}</option>
-                  ))}
-                </select>
+                <Select name="category" defaultValue={value.category || categories[0]?.name} options={categories.map((category) => category.name)} />
               </Field>
               <Field label="Ubicación">
                 <input name="location" defaultValue={value.location} className="field" required placeholder="Ej. Cusco y Machu Picchu" />
@@ -75,10 +76,14 @@ export function ExperienceForm({
           <AdminPanel title="Publicación">
             <div className="grid gap-4">
               <Field label="Estado">
-                <select name="status" defaultValue={value.status} className="field">
-                  <option value="ACTIVE">Publicado (visible en la web)</option>
-                  <option value="DRAFT">Borrador (oculto)</option>
-                </select>
+                <Select
+                  name="status"
+                  defaultValue={value.status}
+                  options={[
+                    { value: "ACTIVE", label: "Publicado", hint: "Visible en la web" },
+                    { value: "DRAFT", label: "Borrador", hint: "Oculto" },
+                  ]}
+                />
               </Field>
               <label className="flex items-center gap-3 rounded-xl border border-[#e4e7ec] px-4 py-3 text-sm font-medium text-[#344054]">
                 <input name="featured" type="checkbox" defaultChecked={value.featured} className="h-4 w-4 accent-[#d4952a]" />
@@ -96,11 +101,7 @@ export function ExperienceForm({
                 <input name="priceFrom" type="number" min={0} step="any" defaultValue={value.priceFrom} className="field" required />
               </Field>
               <Field label="Moneda">
-                <select name="currency" defaultValue={value.currency} className="field">
-                  {currencies.map((currency) => (
-                    <option key={currency}>{currency}</option>
-                  ))}
-                </select>
+                <Select name="currency" defaultValue={value.currency} options={[...currencies]} />
               </Field>
             </div>
           </AdminPanel>
@@ -148,33 +149,36 @@ export function ExperienceForm({
         </div>
       </AdminPanel>
 
-      <AdminPanel title="Contenido" description="Escribe un elemento por línea.">
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Field label="Incluye">
-            <textarea name="includes" defaultValue={value.includes?.join("\n")} rows={5} className="field" placeholder={"Guía especializado\nTransporte turístico"} />
+      <AdminPanel title="Qué incluye" description="Lo que el cliente recibe y lo que debe pagar aparte.">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Field label="✅ Incluye">
+            <TextListField name="includes" defaultValue={value.includes} placeholder="Ej.: Transporte turístico ida y vuelta" addLabel="Agregar lo que incluye" />
           </Field>
-          <Field label="No incluye">
-            <textarea name="excludes" defaultValue={value.excludes?.join("\n")} rows={5} className="field" placeholder={"Almuerzo\nPropinas"} />
-          </Field>
-          <Field label="Itinerario" hint='Formato: "Título: descripción". Cada línea es un día o una etapa.'>
-            <textarea
-              name="itinerary"
-              defaultValue={value.itinerary?.map((item) => `${item.title}: ${item.description}`).join("\n")}
-              rows={6}
-              className="field"
-              placeholder={"Recojo del hotel: Salida a las 5:00 a. m.\nVisita guiada: Recorrido de 2 horas"}
-            />
-          </Field>
-          <Field label="Preguntas frecuentes" hint='Formato: "¿Pregunta? Respuesta".'>
-            <textarea
-              name="faqs"
-              defaultValue={value.faqs?.map((faq) => `${faq.question} ${faq.answer}`).join("\n")}
-              rows={6}
-              className="field"
-              placeholder="¿Incluye entradas? Sí, todas las entradas están incluidas."
-            />
+          <Field label="❌ No incluye">
+            <TextListField name="excludes" defaultValue={value.excludes} placeholder="Ej.: Almuerzo" addLabel="Agregar lo que no incluye" />
           </Field>
         </div>
+      </AdminPanel>
+
+      <AdminPanel title="Itinerario" description="Cada paso aparece en la ficha como una línea de tiempo. Usa las flechas para ordenarlos.">
+        <PairListField
+          name="itinerary"
+          numbered
+          defaultValue={value.itinerary?.map((item) => ({ title: item.title, text: item.description }))}
+          titlePlaceholder="Ej.: Día 1 · Llegada a Cusco  /  5:00 a. m. · Recojo del hotel"
+          textPlaceholder="Qué se hace en este momento del viaje"
+          addLabel="Agregar paso al itinerario"
+        />
+      </AdminPanel>
+
+      <AdminPanel title="Preguntas frecuentes" description="Dudas comunes de los viajeros sobre este paquete.">
+        <PairListField
+          name="faqs"
+          defaultValue={value.faqs?.map((faq) => ({ title: faq.question, text: faq.answer }))}
+          titlePlaceholder="Ej.: ¿Incluye las entradas?"
+          textPlaceholder="Respuesta"
+          addLabel="Agregar pregunta"
+        />
       </AdminPanel>
 
       <AdminPanel title="SEO (opcional)" description="Cómo aparece el paquete en Google. Si lo dejas vacío se genera automáticamente.">
@@ -193,8 +197,8 @@ export function ExperienceForm({
           <Link href="/admin/experiencias" className={adminSecondaryButton}>
             Cancelar
           </Link>
-          <button type="submit" className={adminPrimaryButton}>
-            <Save className="h-4 w-4" />
+          <button type="submit" disabled={saving} className={`${adminPrimaryButton} disabled:opacity-60`}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {experience ? "Guardar cambios" : "Crear paquete"}
           </button>
         </div>

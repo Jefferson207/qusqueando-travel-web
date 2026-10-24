@@ -1,6 +1,4 @@
-"use client";
-
-import { usePathname } from "next/navigation";
+import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Headphones, Info, MapPinned, UserRound, X } from "lucide-react";
 import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
@@ -23,7 +21,7 @@ const options = [
 ];
 
 export function FloatingWhatsappChat() {
-  const pathname = usePathname();
+  const { pathname } = useLocation();
   const siteConfig = useSiteConfig();
   const [isOpen, setIsOpen] = useState(false);
 

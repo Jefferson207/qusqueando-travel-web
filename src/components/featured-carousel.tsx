@@ -1,7 +1,5 @@
-"use client";
-
 import { useCallback, useEffect, useRef } from "react";
-import Link from "next/link";
+import Link from "@/components/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { ExperienceCard } from "@/components/experience-card";
 import type { Experience } from "@/lib/data";

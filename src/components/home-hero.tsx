@@ -1,14 +1,12 @@
-"use client";
-
-import Image from "next/image";
-import Link from "next/link";
+import Image from "@/components/image";
+import Link from "@/components/link";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, MapPin } from "lucide-react";
 import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
 import { useSiteConfig } from "@/components/site-config-provider";
 import { buttonClassName } from "@/components/ui/button";
 import { whatsappUrl } from "@/lib/site";
-import type { StoredSiteConfig } from "@/lib/store";
+import type { SiteConfig } from "@/lib/site";
 
 const fadeUp = (delay: number) => ({
   initial: { opacity: 0, y: 22 },
@@ -16,7 +14,7 @@ const fadeUp = (delay: number) => ({
   transition: { duration: 0.7, delay, ease: "easeOut" as const },
 });
 
-export function HomeHero({ config }: { config: StoredSiteConfig }) {
+export function HomeHero({ config }: { config: SiteConfig }) {
   const siteConfig = useSiteConfig();
   const { scrollY } = useScroll();
   const imageY = useTransform(scrollY, [0, 700], [0, 110]);
@@ -95,12 +93,12 @@ export function HomeHero({ config }: { config: StoredSiteConfig }) {
         aria-hidden="true"
       >
         <path
-          fill="#fbf6ee"
+          fill="#fbf6ea"
           fillOpacity="0.45"
           d="M0 128V72l90-26 80 18 120-50 110 42 90-22 130 46 140-60 120 44 100-20 140 38 150-52 100 30 70-14v82Z"
         />
         <path
-          fill="#fbf6ee"
+          fill="#fbf6ea"
           d="M0 128V96c120-18 210-30 330-14s200 22 320 2 230-44 360-26 270 34 430 10v60Z"
         />
       </svg>

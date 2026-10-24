@@ -1,20 +1,15 @@
-import Image from "next/image";
+import Image from "@/components/image";
 
-// Silueta andina que une una sección con la siguiente (color crema #fbf6ee).
-export function AndeanDivider({ className = "h-14 sm:h-20 lg:h-24" }: { className?: string }) {
+// Onda crema que une la portada con la sección siguiente (igual que en el inicio).
+export function AndeanDivider({ className = "h-10 sm:h-14" }: { className?: string }) {
   return (
     <svg
       className={`pointer-events-none absolute inset-x-0 -bottom-px w-full ${className}`}
-      viewBox="0 0 1440 128"
+      viewBox="0 0 1440 48"
       preserveAspectRatio="none"
       aria-hidden="true"
     >
-      <path
-        fill="#fbf6ee"
-        fillOpacity="0.45"
-        d="M0 128V72l90-26 80 18 120-50 110 42 90-22 130 46 140-60 120 44 100-20 140 38 150-52 100 30 70-14v82Z"
-      />
-      <path fill="#fbf6ee" d="M0 128V96c120-18 210-30 330-14s200 22 320 2 230-44 360-26 270 34 430 10v60Z" />
+      <path fill="#fbf6ea" d="M0 48V30c120 16 240 18 360 4s200-30 320-20 230 26 360 16 260-24 400-10v28Z" />
     </svg>
   );
 }
@@ -52,22 +47,23 @@ export function PageHero({
         className="fx-kenburns -z-10 object-cover"
         style={{ objectPosition: imagePosition }}
       />
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(2,22,35,0.82)_0%,rgba(2,22,35,0.5)_45%,rgba(2,22,35,0.15)_100%)]" />
-      <div className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#021623]/40 to-transparent" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(2,22,35,0.85)_0%,rgba(2,22,35,0.55)_45%,rgba(2,22,35,0.2)_100%)]" />
+      {/* Oscurece arriba para que el menú y el logo se lean sobre cualquier foto */}
+      <div className="absolute inset-x-0 top-0 -z-10 h-56 bg-gradient-to-b from-[#021623]/70 to-transparent" />
 
-      <div className="mx-auto flex min-h-[460px] max-w-7xl items-end px-4 pb-28 pt-[calc(92px+4rem)] sm:min-h-[520px] sm:px-6 sm:pb-32 lg:px-8">
+      <div className="mx-auto flex min-h-[520px] max-w-7xl items-end px-5 pb-24 pt-44 sm:min-h-[600px] sm:px-8 sm:pb-28 sm:pt-52 lg:px-10">
         <div className="max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[#f3c77a]">{eyebrow}</p>
-          <h1 className="mt-4 font-display text-4xl font-semibold leading-[1.05] [text-shadow:0_4px_24px_rgba(0,0,0,0.45)] sm:text-5xl lg:text-6xl">
+          <p style={{ "--d": "0.1s" } as React.CSSProperties} className="fx-rise text-xs font-bold uppercase tracking-[0.3em] text-[#f3c77a] [text-shadow:0_2px_10px_rgba(0,0,0,0.5)]">{eyebrow}</p>
+          <h1 style={{ "--d": "0.25s" } as React.CSSProperties} className="fx-rise mt-4 font-display text-4xl font-bold leading-[1.05] [text-shadow:0_4px_24px_rgba(0,0,0,0.45)] sm:text-5xl lg:text-6xl">
             {title}
             {accent ? <span className="block italic text-[#e6a93e]">{accent}</span> : null}
           </h1>
           {description ? (
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-white/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.45)]">
+            <p style={{ "--d": "0.45s" } as React.CSSProperties} className="fx-rise mt-5 max-w-2xl text-lg leading-8 text-white/90 [text-shadow:0_2px_12px_rgba(0,0,0,0.45)]">
               {description}
             </p>
           ) : null}
-          {children}
+          {children ? <div style={{ "--d": "0.6s" } as React.CSSProperties} className="fx-rise">{children}</div> : null}
         </div>
       </div>
 

@@ -1,5 +1,3 @@
-"use client";
-
 import { ImagePlus } from "lucide-react";
 
 export function ImageUpload({

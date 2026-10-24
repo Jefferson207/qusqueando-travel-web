@@ -1,41 +1,41 @@
-"use client";
-
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Image from "@/components/image";
+import Link from "@/components/link";
+import { useLocation } from "react-router-dom";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Luggage, Menu, X } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 import { WhatsappIcon } from "@/components/icons/whatsapp-icon";
 import { motion, useMotionValueEvent, useScroll, useTransform } from "framer-motion";
 import { buttonClassName } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSiteConfig } from "@/components/site-config-provider";
 import { whatsappUrl } from "@/lib/site";
+import { useCart } from "@/lib/trip";
+import { LangSwitch } from "@/components/lang-switch";
 
 const navItems = [
   { href: "/", label: "Inicio" },
-  { href: "/experiencias", label: "Experiencias" },
+  { href: "/experiencias", label: "Paquetes" },
+  { href: "/experiencias?categoria=Arqueoastronom%C3%ADa", label: "Astronomía" },
   { href: "/nosotros", label: "Nosotros" },
   { href: "/contacto", label: "Contacto" },
 ];
 
 export function Navbar() {
-  const pathname = usePathname();
+  const { pathname } = useLocation();
   const siteConfig = useSiteConfig();
+  const cartCount = useCart().length;
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
-  const height = useTransform(scrollY, [0, 120], [92, 76]);
+  const height = useTransform(scrollY, [0, 120], [132, 84]);
   useMotionValueEvent(scrollY, "change", (value) => setScrolled(value > 40));
 
   // En las páginas con portada fotográfica el menú flota transparente sobre la
   // foto y se vuelve blanco al hacer scroll. En el resto siempre es blanco.
-  const hasHero =
-    pathname === "/" ||
-    pathname === "/nosotros" ||
-    pathname === "/contacto" ||
-    pathname === "/experiencias" ||
-    pathname.startsWith("/experiencias/");
+  // Páginas sin portada fotográfica; todas las demás (incluida la 404) la tienen.
+  const plainPages = ["/reservar", "/libro-de-reclamaciones", "/afiche-esnna-mincetur", "/politica-de-privacidad", "/politica-de-proteccion-de-datos-personales", "/terminos-y-condiciones", "/medios-de-pago", "/politica-de-cookies"];
+  const hasHero = !plainPages.some((path) => pathname === path || pathname.startsWith(`${path}/`));
   const transparent = hasHero && !scrolled && !isOpen;
 
   return (
@@ -55,53 +55,50 @@ export function Navbar() {
         style={{ height }}
         className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8"
       >
-        <Link href="/" className="group flex min-w-0 items-center gap-3" onClick={() => setIsOpen(false)}>
+        <Link href="/" className="group flex min-w-0 items-center" onClick={() => setIsOpen(false)}>
+          {/* Logo blanco sobre la foto; a color cuando el menú se vuelve blanco. */}
           <span
             className={cn(
-              "shrink-0 rounded-2xl transition duration-300 group-hover:-translate-y-0.5",
-              transparent && "bg-[#fbf6ee]/95 px-1.5 py-1 shadow-[0_8px_24px_rgba(0,0,0,0.25)]",
+              "relative block shrink-0 transition-all duration-300 group-hover:-translate-y-0.5",
+              transparent ? "mt-4 h-24 w-36 sm:h-28 sm:w-44" : "h-16 w-24 sm:w-28",
             )}
           >
             <Image
-              src={siteConfig.logoMark}
+              src="/logo-blanco.png"
               alt=""
-              width={225}
-              height={160}
+              width={508}
+              height={400}
               priority
-              className={cn("w-auto object-contain transition-all duration-300", transparent ? "h-12 sm:h-14" : "h-14 sm:h-16")}
+              className={cn(
+                "absolute inset-0 h-full w-full object-contain object-center drop-shadow-[0_3px_10px_rgba(0,0,0,0.48)] transition-opacity duration-300",
+                transparent ? "opacity-100" : "opacity-0",
+              )}
+            />
+            <Image
+              src="/logo-color.png"
+              alt=""
+              width={508}
+              height={400}
+              priority
+              className={cn(
+                "absolute inset-0 h-full w-full object-contain object-center transition-opacity duration-300",
+                transparent ? "opacity-0" : "opacity-100",
+              )}
             />
           </span>
-          <span className="flex min-w-0 flex-col leading-none">
-            <span
-              className={cn(
-                "truncate text-lg font-extrabold uppercase tracking-[0.04em] transition-colors sm:text-2xl",
-                transparent ? "text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]" : "text-[#021623]",
-              )}
-            >
-              Qusqueando
-            </span>
-            <span
-              className={cn(
-                "mt-1.5 text-[0.7rem] font-bold uppercase tracking-[0.5em] transition-colors sm:text-xs",
-                transparent ? "text-[#f3c77a]" : "text-[#b97a0b]",
-              )}
-            >
-              Travel
-            </span>
-            <span className="sr-only">{siteConfig.name}</span>
-          </span>
+          <span className="sr-only">{siteConfig.name}</span>
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex lg:gap-10" aria-label="Navegación principal">
+        <nav className="hidden items-center gap-7 lg:flex xl:gap-9" aria-label="Navegación principal">
           {navItems.map((item) => {
             const active = pathname === item.href;
 
             return (
               <Link
-                key={item.href}
+                key={item.label}
                 href={item.href}
                 className={cn(
-                  "group/link relative py-2 text-base font-semibold tracking-[0.01em] transition duration-300 lg:text-[1.0625rem]",
+                  "group/link relative py-2 text-sm font-semibold tracking-[0.01em] transition duration-300",
                   transparent
                     ? cn(
                         "[text-shadow:0_1px_10px_rgba(0,0,0,0.6)]",
@@ -125,6 +122,28 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <LangSwitch dark={transparent} className="hidden md:inline-flex" />
+          {/* "Mi viaje": experiencias guardadas para reservar juntas */}
+          <AnimatePresence>
+            {cartCount > 0 ? (
+              <motion.span initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}>
+                <Link
+                  href="/reservar?carrito=1"
+                  aria-label={`Mi viaje: ${cartCount} ${cartCount === 1 ? "experiencia" : "experiencias"}`}
+                  className={cn(
+                    "relative inline-flex h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition hover:-translate-y-0.5",
+                    transparent ? "border-white/40 bg-white/10 text-white backdrop-blur hover:bg-white/20" : "border-[#e9c98a] bg-white text-[#021623] hover:bg-[#fdf6e7]",
+                  )}
+                >
+                  <Luggage className="h-[1.15rem] w-[1.15rem]" />
+                  <span className="hidden sm:inline">Mi viaje</span>
+                  <motion.span key={cartCount} initial={{ scale: 1.6 }} animate={{ scale: 1 }} className="grid h-5 min-w-5 place-items-center rounded-full bg-[#d4952a] px-1 text-[11px] font-bold text-[#021623]">
+                    {cartCount}
+                  </motion.span>
+                </Link>
+              </motion.span>
+            ) : null}
+          </AnimatePresence>
           <a
             href={whatsappUrl(siteConfig.whatsapp)}
             target="_blank"
@@ -132,12 +151,12 @@ export function Navbar() {
             className={buttonClassName("primary", "hidden h-11 px-6 text-[0.95rem] sm:inline-flex")}
           >
             <WhatsappIcon className="h-[1.15rem] w-[1.15rem]" />
-            Reservar ahora
+            Contáctanos
           </a>
           <button
             type="button"
             className={cn(
-              "inline-flex h-10 w-10 items-center justify-center rounded-full border shadow-sm transition hover:scale-105 md:hidden",
+              "inline-flex h-10 w-10 items-center justify-center rounded-full border shadow-sm transition hover:scale-105 lg:hidden",
               transparent
                 ? "border-white/40 bg-white/10 text-white backdrop-blur hover:bg-white/20"
                 : "border-[#e4e7ec] bg-white/90 text-[#021623] hover:bg-white",
@@ -155,13 +174,14 @@ export function Navbar() {
       {isOpen ? (
         <nav
           id="mobile-navigation"
-          className="border-t border-[#eaecf0] bg-white px-4 py-4 shadow-[0_18px_40px_rgba(2,22,35,0.10)] md:hidden"
+          className="border-t border-[#eaecf0] bg-white px-4 py-4 shadow-[0_18px_40px_rgba(2,22,35,0.10)] lg:hidden"
           aria-label="Navegación móvil"
         >
           <div className="mx-auto grid max-w-7xl gap-2">
+            <LangSwitch className="mb-2 w-fit md:hidden" />
             {navItems.map((item) => (
               <Link
-                key={item.href}
+                key={item.label}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
                 className={cn(

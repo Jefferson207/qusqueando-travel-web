@@ -1,5 +1,5 @@
-import experienceImages from "@/lib/experience-images.json";
-import { slugify } from "@/lib/utils";
+import experienceImages from "./experience-images.json" with { type: "json" };
+import { slugify } from "./utils.js";
 
 export type Category = {
   id: string;

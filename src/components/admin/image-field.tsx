@@ -1,17 +1,11 @@
-"use client";
-
 import { useRef, useState } from "react";
 import { ImagePlus, Loader2, Upload } from "lucide-react";
+import { api } from "@/lib/admin-api";
 
 export async function uploadImage(file: File): Promise<string> {
   const body = new FormData();
   body.append("file", file);
-  const response = await fetch("/api/admin/upload", { method: "POST", body });
-  const data = (await response.json().catch(() => ({}))) as { url?: string; error?: string };
-  if (!response.ok || !data.url) {
-    throw new Error(data.error ?? "No se pudo subir la imagen.");
-  }
-  return data.url;
+  return (await api<{ url: string }>("/api/upload", { method: "POST", body })).url;
 }
 
 // Campo de imagen del admin: vista previa, botón para subir desde la
@@ -59,7 +53,6 @@ export function ImageField({
         className={`relative overflow-hidden rounded-2xl border border-dashed border-[#d0d5dd] bg-[#f9fafb] ${previewClassName}`}
       >
         {value ? (
-          // eslint-disable-next-line @next/next/no-img-element -- vista previa de URLs arbitrarias
           <img
             src={value}
             alt=""

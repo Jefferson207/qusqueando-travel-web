@@ -1,6 +1,4 @@
-"use client";
-
-import Image from "next/image";
+import Image from "@/components/image";
 import { useState } from "react";
 import { X } from "lucide-react";
 

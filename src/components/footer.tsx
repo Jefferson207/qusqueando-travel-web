@@ -1,11 +1,11 @@
-import Link from "next/link";
-import Image from "next/image";
+import Link from "@/components/link";
+import Image from "@/components/image";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { socialNetworks } from "@/components/icons/social-icons";
 import { EsnnaModalLink } from "@/components/esnna-modal-link";
 import { legalEntity } from "@/lib/legal";
 import { whatsappUrl } from "@/lib/site";
-import { getSiteConfig } from "@/lib/store";
+import { useSiteConfig } from "@/components/site-config-provider";
 
 const legalLinks = [
   { href: "/politica-de-privacidad", label: "Política de Privacidad" },
@@ -20,17 +20,18 @@ const legalLinks = [
   { href: "/libro-de-reclamaciones", label: "Libro de Reclamaciones" },
 ];
 
-export async function Footer() {
-  const siteConfig = await getSiteConfig();
+export function Footer() {
+  const siteConfig = useSiteConfig();
 
   return (
-    <footer className="relative overflow-hidden bg-[#021623] text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,rgba(212,149,42,0.18),transparent_30%),linear-gradient(135deg,#021623,#03111b_58%,#01090f)]" />
-      <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(135deg,rgba(255,255,255,0.26)_1px,transparent_1px)] [background-size:46px_46px]" />
+    <footer className="relative overflow-hidden bg-[#06152a] text-white">
+      {/* Cielo nocturno con montañas y chakanas doradas */}
+      <Image src="/images/home/footer.webp" alt="" fill sizes="100vw" className="pointer-events-none object-cover object-bottom" />
+      <div className="absolute inset-0 bg-[#06152a]/35" />
       <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.35fr_0.85fr_1fr_1fr] lg:px-8">
         <div>
-          <div className="w-fit rounded-2xl bg-[#fef6e8] p-3 shadow-[0_18px_40px_rgba(212,149,42,0.18)]">
-            <Image src={siteConfig.logoFull} alt={siteConfig.name} width={160} height={163} className="h-auto w-36" />
+          <div className="w-fit">
+            <Image src="/logo-blanco.png" alt={siteConfig.name} width={508} height={400} className="h-auto w-40" />
           </div>
           <p className="mt-5 max-w-md text-sm leading-6 text-[#d0d5dd]">
             Experiencias culturales, arqueoastronómicas y de naturaleza en Perú,

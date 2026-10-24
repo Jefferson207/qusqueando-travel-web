@@ -1,5 +1,3 @@
-"use client";
-
 import { useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { uploadImage } from "@/components/admin/image-field";
@@ -53,7 +51,6 @@ export function GalleryField({ name, defaultValue = [] }: { name: string; defaul
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {images.map((image, index) => (
           <div key={`${image}-${index}`} className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-[#e4e7ec] bg-[#f9fafb]">
-            {/* eslint-disable-next-line @next/next/no-img-element -- vista previa de URLs arbitrarias */}
             <img src={image} alt="" className="h-full w-full object-cover" />
             <span className="absolute left-2 top-2 rounded-full bg-[#021623]/80 px-2 py-0.5 text-[0.65rem] font-semibold text-white">
               {index + 1}

@@ -70,7 +70,7 @@ export function CurrencySettings({ config, sample }: { config: SiteConfig; sampl
   return (
     <AdminPanel
       title="Precios en dólares y euros"
-      description="Cuando un visitante cambia la web a inglés (EN) los precios se muestran en dólares, y en italiano (IT) en euros. En español se ven tal como los cargas en cada paquete."
+      description="Cuando un visitante cambia la web a inglés (EN) los precios se muestran en dólares, y en italiano (IT) en euros. En español se muestran en soles (los que cargas en dólares se convierten con el tipo de cambio)."
     >
       <input type="hidden" name="fxUsdRate" value={usdRate} />
       <input type="hidden" name="fxEurRate" value={eurRate} />

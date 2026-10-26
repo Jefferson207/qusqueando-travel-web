@@ -92,8 +92,27 @@ export const addToCart = (slug: string) => {
   if (!current.includes(slug) && current.length < MAX_ITEMS) saveCart([...current, slug]);
 };
 export const removeFromCart = (slug: string) => saveCart(cartSlugs().filter((item) => item !== slug));
+export const cartIsFull = () => cartSlugs().length >= MAX_ITEMS;
 export const replaceCart = (slugs: string[]) => saveCart([...new Set(slugs)].slice(0, MAX_ITEMS));
 export const clearCart = () => saveCart([]);
+
+// Panel lateral de "Mi viaje" (components/trip-drawer.tsx)
+const OPEN_EVENT = "qusqueando-mi-viaje-abrir";
+export const openTrip = () => window.dispatchEvent(new Event(OPEN_EVENT));
+
+export function useTripOpener(onOpen: () => void) {
+  useEffect(() => {
+    window.addEventListener(OPEN_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_EVENT, onOpen);
+  }, [onOpen]);
+}
+
+/** Agrega o quita un paquete; al agregarlo abre el panel para que se vea la cesta. */
+export function toggleInCart(slug: string) {
+  if (cartSlugs().includes(slug)) return removeFromCart(slug);
+  addToCart(slug);
+  openTrip();
+}
 
 export function useCart() {
   const [slugs, setSlugs] = useState(cartSlugs);

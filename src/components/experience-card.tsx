@@ -2,17 +2,19 @@ import Image from "@/components/image";
 import Link from "@/components/link";
 import { ArrowRight, Clock, Flame, Mountain, Users } from "lucide-react";
 import { IntiSun } from "@/components/icons/inti-sun";
+import { AddToTripButton } from "@/components/trip-drawer";
 import type { Experience } from "@/lib/data";
-import { money } from "@/lib/money";
+import { money, PRICE_ON_REQUEST } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
 export function ExperienceCard({ experience, className }: { experience: Experience; className?: string }) {
   return (
+    // El botón "+" va fuera del enlace (no puede haber un botón dentro de un <a>).
+    <div className={cn("relative h-full", className)}>
     <Link
       href={`/experiencias/${experience.slug}`}
       className={cn(
         "group flex h-full flex-col overflow-hidden rounded-3xl border border-[#efe6d6] bg-white shadow-[0_14px_40px_rgba(2,22,35,0.07)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_26px_60px_rgba(2,22,35,0.14)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4952a]",
-        className,
       )}
     >
       <div className="relative aspect-[4/3] overflow-hidden">
@@ -58,9 +60,9 @@ export function ExperienceCard({ experience, className }: { experience: Experien
 
         <div className="mt-auto flex items-end justify-between gap-3 pt-5">
           <div>
-            <p className="text-xs text-[#667085]">Desde</p>
+            <p className="text-xs text-[#667085]">{experience.priceFrom ? "Desde" : "Precio"}</p>
             <p className="text-xl font-bold text-[#021623]">
-              <span translate="no" className="notranslate">{money(experience.priceFrom, experience.currency)}</span>
+              {experience.priceFrom ? <span translate="no" className="notranslate">{money(experience.priceFrom, experience.currency)}</span> : <span className="text-base">A consultar</span>}
             </p>
           </div>
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#d4952a] text-[#021623] shadow-[0_10px_24px_rgba(212,149,42,0.35)] transition duration-300 group-hover:translate-x-0.5 group-hover:bg-[#b97a0b] group-hover:text-white">
@@ -70,5 +72,7 @@ export function ExperienceCard({ experience, className }: { experience: Experien
         </div>
       </div>
     </Link>
+    {experience.status === "ACTIVE" ? <AddToTripButton slug={experience.slug} name={experience.name} className="absolute bottom-5 right-[4.25rem] h-11 w-11" /> : null}
+    </div>
   );
 }

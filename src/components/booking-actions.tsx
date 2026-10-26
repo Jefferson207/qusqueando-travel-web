@@ -4,7 +4,7 @@ import Link from "@/components/link";
 import { buttonClassName } from "@/components/ui/button";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import type { Experience } from "@/lib/data";
-import { addToCart, removeFromCart, useCart, useTripParams } from "@/lib/trip";
+import { toggleInCart, useCart, useTripParams } from "@/lib/trip";
 import { cn } from "@/lib/utils";
 
 /** Botones de la ficha: reservar ahora, guardar en "Mi viaje" y consultar por WhatsApp. */
@@ -23,7 +23,7 @@ export function BookingActions({ experience, dark = false, className }: { experi
       </Link>
       <button
         type="button"
-        onClick={() => (saved ? removeFromCart(experience.slug) : addToCart(experience.slug))}
+        onClick={() => toggleInCart(experience.slug)}
         aria-pressed={saved}
         className={cn(
           "inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full border px-6 text-sm font-semibold transition hover:-translate-y-0.5 sm:w-auto",

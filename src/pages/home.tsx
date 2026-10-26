@@ -4,9 +4,10 @@ import { useSeo } from "@/components/seo";
 import Image from "@/components/image";
 import Link from "@/components/link";
 import { HomeSearch } from "@/components/home-search";
+import { AddToTripButton } from "@/components/trip-drawer";
 import { useCatalog } from "@/components/site-config-provider";
 import { homeMetadata } from "@/lib/seo";
-import { money } from "@/lib/money";
+import { money, PRICE_ON_REQUEST } from "@/lib/money";
 import { ArrowRight, CalendarDays, Landmark, Moon, Mountain, Star, Telescope, UtensilsCrossed, UsersRound } from "lucide-react";
 
 const destinations = [
@@ -144,10 +145,10 @@ export default function Home() {
         <Link href="/experiencias" className={outlineButton}>Ver todos los paquetes <ArrowRight className="h-4 w-4 transition group-hover/btn:translate-x-1" /></Link>
       </Reveal>
       <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">{packages.map((item, i) => (
-        <Reveal key={item.id} delay={i * 0.1} className="h-full"><Link href={`/experiencias/${item.slug}`} className="group block h-full overflow-hidden rounded-2xl bg-white shadow-[0_14px_34px_rgba(4,29,49,.12)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_44px_rgba(4,29,49,.2)]">
+        <Reveal key={item.id} delay={i * 0.1} className="relative h-full"><Link href={`/experiencias/${item.slug}`} className="group block h-full overflow-hidden rounded-2xl bg-white shadow-[0_14px_34px_rgba(4,29,49,.12)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_44px_rgba(4,29,49,.2)]">
           <div className="relative h-48 overflow-hidden">{shine}<Image src={item.mainImage} alt={item.name} fill sizes="(min-width:1024px) 25vw, 50vw" className="object-cover transition duration-500 group-hover:scale-105" />{i === 0 && <span className="fx-float absolute left-3 top-3 rounded-full bg-[#d69620] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">Más vendido</span>}</div>
-          <div className="p-5"><h3 className="font-bold text-[#06213b]">{item.name}</h3><p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500"><CalendarDays className="h-3.5 w-3.5 text-[#cf8d16]" />{item.duration}</p><div className="mt-4 flex items-center justify-between"><span className="text-sm text-slate-500">Desde <b translate="no" className="notranslate text-base text-[#06213b]">{money(item.priceFrom, item.currency)}</b></span><span className="grid h-10 w-10 place-items-center rounded-full bg-[#d69620] text-white transition duration-300 group-hover:rotate-[-45deg] group-hover:bg-[#b6780e]"><ArrowRight className="h-4 w-4" /></span></div></div>
-        </Link></Reveal>
+          <div className="p-5"><h3 className="font-bold text-[#06213b]">{item.name}</h3><p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500"><CalendarDays className="h-3.5 w-3.5 text-[#cf8d16]" />{item.duration}</p><div className="mt-4 flex items-center justify-between"><span className="text-sm text-slate-500">{item.priceFrom ? <>Desde <b translate="no" className="notranslate text-base text-[#06213b]">{money(item.priceFrom, item.currency)}</b></> : PRICE_ON_REQUEST}</span><span className="grid h-10 w-10 place-items-center rounded-full bg-[#d69620] text-white transition duration-300 group-hover:rotate-[-45deg] group-hover:bg-[#b6780e]"><ArrowRight className="h-4 w-4" /></span></div></div>
+        </Link><AddToTripButton slug={item.slug} name={item.name} className="absolute bottom-5 right-[4.25rem]" /></Reveal>
       ))}</div>
     </div></section>
 

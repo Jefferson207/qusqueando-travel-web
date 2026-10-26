@@ -11,7 +11,7 @@ import type { Experience } from "@/lib/data";
 import { COUNTRIES, EMAIL_HINT, validEmail, validPhone } from "@/lib/fields";
 import { siteDomain, toWhatsappWebUrl, whatsappMessageUrl } from "@/lib/site";
 import { cartSlugs, clearCart, formatDate, personsLabel, replaceCart, travelersLabel, tripTotals, useTripParams } from "@/lib/trip";
-import { money } from "@/lib/money";
+import { money, PRICE_ON_REQUEST } from "@/lib/money";
 import { cn, formatCurrency } from "@/lib/utils";
 
 const steps = ["Experiencia", "Fecha y viajeros", "Tus datos", "Confirmar"];
@@ -238,7 +238,7 @@ export default function BookingPage() {
                             <span className="min-w-0 flex-1">
                               <b className="block truncate text-sm text-[#021623]">{item.name}</b>
                               <small className="mt-0.5 flex items-center gap-1 text-xs text-[#667085]"><Clock className="h-3 w-3" /> {item.duration}</small>
-                              <small className="text-xs font-semibold text-[#b97a0b]">Desde <span translate="no" className="notranslate">{money(item.priceFrom, item.currency)}</span></small>
+                              <small className="text-xs font-semibold text-[#b97a0b]">{item.priceFrom ? <>Desde <span translate="no" className="notranslate">{money(item.priceFrom, item.currency)}</span></> : PRICE_ON_REQUEST}</small>
                             </span>
                             <span className={cn("grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition", on ? "border-[#d4952a] bg-[#d4952a] text-white" : "border-[#e4d5b8]")}>
                               {on ? <Check className="h-3.5 w-3.5" /> : null}

@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import { FloatingWhatsappChat } from "@/components/floating-whatsapp-chat";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
+import { TripDrawer } from "@/components/trip-drawer";
 import { WhatsappDesktopLinks } from "@/components/whatsapp-desktop-links";
 import AboutPage from "@/pages/about";
 import BookingPage from "@/pages/booking";
@@ -51,6 +52,7 @@ function PublicSite() {
       </main>
       <Footer />
       <FloatingWhatsappChat />
+      <TripDrawer />
     </>
   );
 }

@@ -10,7 +10,7 @@ import { buttonClassName } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSiteConfig } from "@/components/site-config-provider";
 import { whatsappUrl } from "@/lib/site";
-import { useCart } from "@/lib/trip";
+import { openTrip, useCart } from "@/lib/trip";
 import { LangSwitch } from "@/components/lang-switch";
 
 const navItems = [
@@ -127,8 +127,9 @@ export function Navbar() {
           <AnimatePresence>
             {cartCount > 0 ? (
               <motion.span initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}>
-                <Link
-                  href="/reservar?carrito=1"
+                <button
+                  type="button"
+                  onClick={openTrip}
                   aria-label={`Mi viaje: ${cartCount} ${cartCount === 1 ? "experiencia" : "experiencias"}`}
                   className={cn(
                     "relative inline-flex h-11 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition hover:-translate-y-0.5",
@@ -140,7 +141,7 @@ export function Navbar() {
                   <motion.span key={cartCount} initial={{ scale: 1.6 }} animate={{ scale: 1 }} className="grid h-5 min-w-5 place-items-center rounded-full bg-[#d4952a] px-1 text-[11px] font-bold text-[#021623]">
                     {cartCount}
                   </motion.span>
-                </Link>
+                </button>
               </motion.span>
             ) : null}
           </AnimatePresence>

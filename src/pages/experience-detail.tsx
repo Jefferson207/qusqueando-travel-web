@@ -11,7 +11,7 @@ import { BookingActions } from "@/components/booking-actions";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { api, getToken } from "@/lib/admin-api";
 import type { Experience } from "@/lib/data";
-import { money } from "@/lib/money";
+import { money, PRICE_ON_REQUEST } from "@/lib/money";
 import { experienceMetadata, experienceSchema } from "@/lib/seo";
 import NotFound from "@/pages/not-found";
 
@@ -73,11 +73,13 @@ function ExperienceView({ experience, experiences }: { experience: Experience; e
         <div className="mt-7 flex flex-wrap items-center gap-5">
           <BookingActions experience={experience} dark />
           <p className="text-white/85">
+            {experience.priceFrom ? <>
             Desde{" "}
             <span className="font-display text-3xl font-semibold text-white">
               <span translate="no" className="notranslate">{money(experience.priceFrom, experience.currency)}</span>
             </span>{" "}
             <span className="text-sm">por persona</span>
+            </> : <span className="font-display text-2xl font-semibold text-white">{PRICE_ON_REQUEST}</span>}
           </p>
         </div>
       </PageHero>
@@ -159,9 +161,9 @@ function ExperienceView({ experience, experiences }: { experience: Experience; e
               <ShieldCheck className="h-6 w-6" />
             </span>
             <div>
-              <p className="text-sm text-[#667085]">Precio desde</p>
+              <p className="text-sm text-[#667085]">{experience.priceFrom ? "Precio desde" : "Precio"}</p>
               <p className="font-display text-3xl font-semibold text-[#021623]">
-                <span translate="no" className="notranslate">{money(experience.priceFrom, experience.currency)}</span>
+                {experience.priceFrom ? <span translate="no" className="notranslate">{money(experience.priceFrom, experience.currency)}</span> : "A consultar"}
               </p>
             </div>
           </div>

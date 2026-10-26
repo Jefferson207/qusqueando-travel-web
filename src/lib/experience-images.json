@@ -1,52 +1,22 @@
 {
-  "machu-picchu": [
-    "/images/experiencias/machu-picchu.jpg",
-    "/images/atardecer-machu-picchu.jpg",
-    "/images/experiencias/tour-privado.jpg"
+  "qosqo-yacta-tradicional": [
+    "/images/experiencias/city-tour-cusco.jpg",
+    "/images/experiencias/sacsayhuaman.jpg",
+    "/images/home/cusco-atardecer.webp"
   ],
   "valle-sagrado": [
     "/images/experiencias/valle-sagrado.jpg",
-    "/images/experiencias/equinoccio.jpg",
-    "/images/experiencias/tour-arqueoastronomico.jpg"
+    "/images/home/valle-sagrado.webp",
+    "/images/home/viajeros.webp"
   ],
-  "waqrapukara": [
-    "/images/experiencias/waqrapukara.jpg",
-    "/images/experiencias/paquete-personalizado.jpg",
-    "/images/experiencias/valle-sagrado.jpg"
-  ],
-  "city-tour-cusco": [
+  "free-walking-tour-qosqo-puma-city": [
+    "/images/home/cusco-atardecer.webp",
     "/images/experiencias/city-tour-cusco.jpg",
-    "/images/experiencias/sacsayhuaman.jpg",
-    "/images/experiencias/tour-arqueoastronomico.jpg"
+    "/images/home/cultura.webp"
   ],
-  "tour-arqueoastronomico": [
-    "/images/experiencias/tour-arqueoastronomico.jpg",
-    "/images/experiencias/sacsayhuaman.jpg",
-    "/images/experiencias/equinoccio.jpg"
-  ],
-  "observacion-de-estrellas": [
-    "/images/experiencias/observacion-de-estrellas.jpg",
-    "/images/experiencias/valle-sagrado.jpg",
-    "/images/experiencias/solsticio-de-invierno.jpg"
-  ],
-  "solsticio-de-invierno": [
-    "/images/experiencias/solsticio-de-invierno.jpg",
-    "/images/experiencias/tour-arqueoastronomico.jpg",
-    "/images/experiencias/machu-picchu.jpg"
-  ],
-  "equinoccio": [
-    "/images/experiencias/equinoccio.jpg",
-    "/images/experiencias/sacsayhuaman.jpg",
-    "/images/experiencias/solsticio-de-invierno.jpg"
-  ],
-  "tour-privado": [
-    "/images/experiencias/tour-privado.jpg",
-    "/images/experiencias/machu-picchu.jpg",
-    "/images/experiencias/valle-sagrado.jpg"
-  ],
-  "paquete-personalizado": [
+  "valle-sur": [
+    "/images/home/amanecer-andes.webp",
     "/images/experiencias/paquete-personalizado.jpg",
-    "/images/experiencias/waqrapukara.jpg",
-    "/images/experiencias/tour-privado.jpg"
+    "/images/home/viajeros.webp"
   ]
 }

@@ -97,7 +97,7 @@ export const experiences: Experience[] = [
     location: "Cusco y parque arqueológico de Sacsayhuamán",
     difficulty: "Fácil",
     modality: "Grupal o privado",
-    priceFrom: 0,
+    priceFrom: 45,
     includes: [
       "Ingreso a los centros arqueológicos de Sacsayhuamán",
       "Ingreso al museo de sitio del Qoricancha",
@@ -131,7 +131,7 @@ export const experiences: Experience[] = [
     location: "Chinchero, Urubamba, Ollantaytambo y Pisac",
     difficulty: "Moderado",
     modality: "Grupal o privado",
-    priceFrom: 0,
+    priceFrom: 65,
     includes: [
       "Ingreso a los centros arqueológicos de Pisac, Ollantaytambo y Chinchero",
       "Guía oficial de turismo",
@@ -188,7 +188,7 @@ export const experiences: Experience[] = [
     location: "Tipón, Pikillacta, Andahuaylillas y Urcos",
     difficulty: "Fácil",
     modality: "Grupal o privado",
-    priceFrom: 0,
+    priceFrom: 30,
     includes: ["Transporte terrestre ida y vuelta", "Guía oficial de turismo"],
     excludes: [
       "Ingreso a los centros arqueológicos de Tipón y Pikillacta",

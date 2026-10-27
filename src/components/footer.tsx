@@ -120,6 +120,12 @@ export function Footer() {
       <div className="relative border-t border-white/15 bg-black/15 px-4 py-5 text-center text-xs text-[#e8d6c4]">
         © {new Date().getFullYear()} {siteConfig.name}. Turismo cultural en Perú.
         {legalEntity.ruc ? ` · RUC ${legalEntity.ruc}` : null}
+        <p className="mt-2 text-[#e8d6c4]/80">
+          Creado por{" "}
+          <a href="https://tupaginaweb.pe" target="_blank" rel="noreferrer" className="font-semibold text-[#f3c77a] transition hover:text-white">
+            tupaginaweb.pe
+          </a>
+        </p>
       </div>
     </footer>
   );

@@ -1,12 +1,11 @@
 import { useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Loader2, Plus, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Trash2, Upload } from "lucide-react";
 import { uploadImage } from "@/components/admin/image-field";
 
 // Galería del admin: varias imágenes ordenables. Se envía como texto con una
 // URL por línea en el campo `name`.
 export function GalleryField({ name, defaultValue = [] }: { name: string; defaultValue?: string[] }) {
   const [images, setImages] = useState(defaultValue);
-  const [url, setUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -36,13 +35,6 @@ export function GalleryField({ name, defaultValue = [] }: { name: string; defaul
       [next[index], next[target]] = [next[target], next[index]];
       return next;
     });
-  }
-
-  function addUrl() {
-    const trimmed = url.trim();
-    if (!trimmed) return;
-    setImages((current) => [...current, trimmed]);
-    setUrl("");
   }
 
   return (
@@ -93,23 +85,6 @@ export function GalleryField({ name, defaultValue = [] }: { name: string; defaul
         className="hidden"
         onChange={(event) => handleFiles(event.target.files)}
       />
-      <div className="flex gap-2">
-        <input
-          value={url}
-          onChange={(event) => setUrl(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              addUrl();
-            }
-          }}
-          placeholder="O pega una URL / ruta /images/..."
-          className="field min-w-0 flex-1 text-xs"
-        />
-        <button type="button" onClick={addUrl} className="inline-flex items-center gap-1.5 rounded-xl border border-[#d0d5dd] px-4 text-sm font-semibold text-[#344054] transition hover:bg-[#f6f7f9]">
-          <Plus className="h-4 w-4" /> Agregar
-        </button>
-      </div>
       {error ? <p className="text-xs font-medium text-red-600">{error}</p> : null}
       <p className="text-xs text-[#667085]">
         Se muestran en la página del paquete en este orden. Si la dejas vacía se usa la imagen principal.

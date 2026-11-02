@@ -8,8 +8,7 @@ export async function uploadImage(file: File): Promise<string> {
   return (await api<{ url: string }>("/api/upload", { method: "POST", body })).url;
 }
 
-// Campo de imagen del admin: vista previa, botón para subir desde la
-// computadora y, opcionalmente, pegar una URL o ruta /images/... a mano.
+// Campo de imagen del admin: vista previa y botón para subir desde la computadora.
 export function ImageField({
   name,
   label,
@@ -70,23 +69,25 @@ export function ImageField({
           </div>
         ) : null}
       </div>
-      <div className="flex gap-2">
+      <div className="relative flex">
+        {/* Oculto pero validable: el navegador avisa si falta la imagen obligatoria. */}
         <input
           name={name}
           value={value}
-          onChange={(event) => setValue(event.target.value)}
-          placeholder="/images/... o https://..."
-          className="field min-w-0 flex-1 text-xs"
+          onChange={() => {}}
           required={required}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-0"
         />
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#021623] px-4 text-sm font-semibold text-white transition hover:bg-[#0b2a3c] disabled:opacity-60"
+          className="relative inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#021623] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0b2a3c] disabled:opacity-60"
         >
           <Upload className="h-4 w-4" />
-          Subir
+          {value ? "Cambiar imagen" : "Subir imagen"}
         </button>
         <input
           ref={inputRef}

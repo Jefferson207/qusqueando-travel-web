@@ -95,7 +95,7 @@ function ExperienceView({ experience, experiences }: { experience: Experience; e
           <MotionSection>
             <div className="rounded-3xl border border-[#efe6d6] bg-white p-6 shadow-[0_14px_40px_rgba(2,22,35,0.06)] sm:p-8">
               <SectionHeading eyebrow="La experiencia" title="Descripción" />
-              <p className="mt-4 text-lg leading-8 text-[#475467]">{experience.fullDescription}</p>
+              <p className="mt-4 whitespace-pre-line text-lg leading-8 text-[#475467]">{experience.fullDescription}</p>
             </div>
           </MotionSection>
 
@@ -133,13 +133,13 @@ function ExperienceView({ experience, experiences }: { experience: Experience; e
                     {index + 1}
                   </span>
                   <h3 className="font-semibold text-[#021623]">{item.title}</h3>
-                  <p className="mt-1.5 text-sm leading-6 text-[#667085]">{item.description}</p>
+                  <p className="mt-1.5 whitespace-pre-line text-sm leading-6 text-[#667085]">{item.description}</p>
                 </li>
               ))}
             </ol>
           </section>
 
-          <section className="mt-12">
+          {experience.faqs.length > 0 && <section className="mt-12">
             <SectionHeading eyebrow="Dudas" title="Preguntas frecuentes" />
             <div className="mt-6 grid gap-3">
               {experience.faqs.map((faq) => (
@@ -148,11 +148,11 @@ function ExperienceView({ experience, experiences }: { experience: Experience; e
                     {faq.question}
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#fdf0dc] text-[#b97a0b] transition group-open:rotate-45">+</span>
                   </summary>
-                  <p className="mt-3 text-sm leading-6 text-[#667085]">{faq.answer}</p>
+                  <p className="mt-3 whitespace-pre-line text-sm leading-6 text-[#667085]">{faq.answer}</p>
                 </details>
               ))}
             </div>
-          </section>
+          </section>}
         </div>
 
         <aside className="h-fit rounded-3xl border border-[#efe6d6] bg-white p-6 shadow-[0_24px_60px_rgba(2,22,35,0.1)] lg:sticky lg:top-28">
@@ -201,6 +201,7 @@ function DetailSection({
   icon: "check" | "x";
 }) {
   const Icon = icon === "check" ? Check : X;
+  if (!items.length) return null;
 
   return (
     <section className="mt-8 rounded-3xl border border-[#efe6d6] bg-white p-6 sm:p-8">

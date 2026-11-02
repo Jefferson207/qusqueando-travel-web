@@ -96,7 +96,7 @@ export default function AdminPage() {
                 <Link href={`/admin/experiencias/${encodeURIComponent(experience.slug)}`} className="flex items-center gap-3 py-2.5 hover:opacity-80">
                   <img src={experience.mainImage} alt="" className="h-10 w-14 shrink-0 rounded-lg bg-[#f2f4f7] object-cover" />
                   <span className="min-w-0 flex-1 truncate text-sm font-medium text-[#021623]">{experience.name}</span>
-                  <span className="text-sm text-[#667085]">{formatCurrency(experience.priceFrom, experience.currency)}</span>
+                  <span className="text-sm text-[#667085]">{experience.priceFrom ? formatCurrency(experience.priceFrom, experience.currency) : "A consultar"}</span>
                 </Link>
               </li>
             ))}

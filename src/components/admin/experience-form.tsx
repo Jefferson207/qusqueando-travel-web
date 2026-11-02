@@ -2,11 +2,11 @@ import Link from "@/components/link";
 import { Loader2, Save } from "lucide-react";
 import { GalleryField } from "@/components/admin/gallery-field";
 import { ImageField } from "@/components/admin/image-field";
-import { AdminPanel, adminPrimaryButton, adminSecondaryButton } from "@/components/admin/admin-ui";
+import { AdminPanel, adminPrimaryButton, adminSecondaryButton, useUnsavedChanges } from "@/components/admin/admin-ui";
 import type { Category, Experience } from "@/lib/data";
 import { currencies } from "@/lib/utils";
 import { Select } from "@/components/ui/pickers";
-import { PairListField, TextListField } from "@/components/admin/list-editors";
+import { PairListField, TextListField, autoSize } from "@/components/admin/list-editors";
 
 const emptyExperience: Partial<Experience> = {
   name: "",
@@ -44,9 +44,17 @@ export function ExperienceForm({
   saving: boolean;
 }) {
   const value = { ...emptyExperience, ...experience };
+  const unsaved = useUnsavedChanges();
 
   return (
-    <form onSubmit={onSubmit} className="mt-8 grid gap-6 pb-24">
+    <form
+      onSubmit={(event) => {
+        unsaved.reset();
+        onSubmit(event);
+      }}
+      {...unsaved.formProps}
+      className="mt-8 grid gap-6 pb-24"
+    >
       <input type="hidden" name="originalSlug" defaultValue={experience?.slug ?? ""} />
 
       <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -66,8 +74,17 @@ export function ExperienceForm({
             <Field label="Descripción corta" hint="Se muestra en las tarjetas (1 o 2 líneas).">
               <textarea name="shortDescription" defaultValue={value.shortDescription} rows={2} className="field" required minLength={10} />
             </Field>
-            <Field label="Descripción completa">
-              <textarea name="fullDescription" defaultValue={value.fullDescription} rows={6} className="field" required minLength={20} />
+            <Field label="Descripción completa" hint="Presiona Enter para separar párrafos: la web respeta los saltos de línea.">
+              <textarea
+                ref={(element) => autoSize(element)}
+                onInput={(event) => autoSize(event.currentTarget)}
+                name="fullDescription"
+                defaultValue={value.fullDescription}
+                rows={6}
+                className="field resize-y leading-6"
+                required
+                minLength={20}
+              />
             </Field>
           </div>
         </AdminPanel>
@@ -97,7 +114,7 @@ export function ExperienceForm({
 
           <AdminPanel title="Precio">
             <div className="grid grid-cols-[1fr_110px] gap-3">
-              <Field label="Precio desde (por persona)">
+              <Field label="Precio desde (por persona)" hint="Déjalo en 0 para mostrar «A consultar».">
                 <input name="priceFrom" type="number" min={0} step="any" defaultValue={value.priceFrom} className="field" required />
               </Field>
               <Field label="Moneda">
@@ -144,6 +161,8 @@ export function ExperienceForm({
               <option value="Privado" />
               <option value="Compartido" />
               <option value="Privado o compartido" />
+              <option value="Grupal" />
+              <option value="Grupal o privado" />
             </datalist>
           </Field>
         </div>
@@ -181,8 +200,15 @@ export function ExperienceForm({
         />
       </AdminPanel>
 
-      <AdminPanel title="SEO (opcional)" description="Cómo aparece el paquete en Google. Si lo dejas vacío se genera automáticamente.">
-        <div className="grid gap-4 sm:grid-cols-2">
+      <details className="group rounded-2xl border border-[#e4e7ec] bg-white p-5 shadow-sm sm:p-6">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
+          <span>
+            <span className="block text-base font-bold text-[#021623]">Google / SEO (opcional)</span>
+            <span className="mt-1 block text-sm text-[#667085]">Cómo aparece el paquete en Google. Si lo dejas vacío se genera automáticamente.</span>
+          </span>
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#fdf0dc] text-[#b97a0b] transition group-open:rotate-45">+</span>
+        </summary>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <Field label="Título SEO">
             <input name="seoTitle" defaultValue={value.seoTitle} className="field" maxLength={70} />
           </Field>
@@ -190,11 +216,12 @@ export function ExperienceForm({
             <input name="seoDescription" defaultValue={value.seoDescription} className="field" maxLength={160} />
           </Field>
         </div>
-      </AdminPanel>
+      </details>
 
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[#e4e7ec] bg-white/95 backdrop-blur lg:left-[260px]">
         <div className="mx-auto flex max-w-6xl items-center justify-end gap-3 px-4 py-3 sm:px-6 lg:px-10">
-          <Link href="/admin/experiencias" className={adminSecondaryButton}>
+          {unsaved.dirty ? <span className="mr-auto hidden text-sm font-medium text-[#b54708] sm:inline">● Cambios sin guardar</span> : null}
+          <Link href="/admin/experiencias" onClick={unsaved.confirmLeave} className={adminSecondaryButton}>
             Cancelar
           </Link>
           <button type="submit" disabled={saving} className={`${adminPrimaryButton} disabled:opacity-60`}>

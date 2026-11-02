@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -71,3 +72,35 @@ export const adminPrimaryButton =
   "inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#d4952a] px-5 text-sm font-semibold text-[#021623] shadow-sm transition hover:bg-[#b97a0b] hover:text-white";
 export const adminSecondaryButton =
   "inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-[#d0d5dd] bg-white px-5 text-sm font-semibold text-[#344054] shadow-sm transition hover:bg-[#f6f7f9]";
+
+/**
+ * Avisa antes de salir de un formulario con cambios sin guardar.
+ * Devuelve las props para el <form> y `confirmLeave` para enlaces como "Cancelar".
+ */
+export function useUnsavedChanges() {
+  const [dirty, setDirty] = useState(false);
+
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (event: BeforeUnloadEvent) => event.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
+
+  const markDirty = () => setDirty(true);
+  return {
+    dirty,
+    formProps: {
+      onInput: markDirty,
+      onChange: markDirty,
+      // Botones internos (subir foto, quitar, ordenar) también cambian el formulario.
+      onClick: (event: React.MouseEvent<HTMLFormElement>) => {
+        if ((event.target as HTMLElement).closest("button[type=button]")) markDirty();
+      },
+    },
+    reset: () => setDirty(false),
+    confirmLeave: (event: React.MouseEvent) => {
+      if (dirty && !window.confirm("Tienes cambios sin guardar. ¿Salir sin guardarlos?")) event.preventDefault();
+    },
+  };
+}

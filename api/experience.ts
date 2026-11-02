@@ -75,7 +75,7 @@ export const PUT = handle(async (request) => {
           })
         : parsed.faqs
             .filter((faq) => faq.title)
-            .map((faq) => ({ question: /[?？]$/.test(faq.title) ? faq.title : `${faq.title}?`, answer: faq.text || "Por confirmar." })),
+            .map((faq) => ({ question: faq.title, answer: faq.text || "Por confirmar." })),
     status: parsed.status,
     featured: parsed.featured,
     order: parsed.order,

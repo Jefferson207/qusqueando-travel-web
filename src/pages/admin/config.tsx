@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import { Loader2, Save } from "lucide-react";
 import { AdminShell } from "@/components/admin/admin-shell";
-import { AdminHeader, AdminNotice, AdminPanel, adminPrimaryButton } from "@/components/admin/admin-ui";
+import { AdminHeader, AdminNotice, AdminPanel, adminPrimaryButton, useUnsavedChanges } from "@/components/admin/admin-ui";
 import { ImageField } from "@/components/admin/image-field";
 import { socialNetworks } from "@/components/icons/social-icons";
 import { api } from "@/lib/admin-api";
@@ -12,6 +12,7 @@ export default function AdminConfigPage() {
   const { config, experiences, reload } = useAdmin();
   const [searchParams, setSearchParams] = useSearchParams();
   const saved = searchParams.get("saved") ?? undefined;
+  const unsaved = useUnsavedChanges();
   const { error, saving, onSubmit } = useAdminForm(async (values) => {
     await api("/api/config", { method: "PUT", body: values });
     await reload();
@@ -24,7 +25,14 @@ export default function AdminConfigPage() {
       <AdminHeader title="Configuración del sitio" description="Logos, portadas, contacto y redes sociales de la web." />
       <AdminNotice error={error || undefined} saved={error ? undefined : saved} />
 
-      <form onSubmit={onSubmit} className="mt-8 grid gap-6 pb-24">
+      <form
+        onSubmit={(event) => {
+          unsaved.reset();
+          onSubmit(event);
+        }}
+        {...unsaved.formProps}
+        className="mt-8 grid gap-6 pb-24"
+      >
         <AdminPanel title="Marca" description="Logos que se muestran en el menú superior y en el pie de página.">
           <div className="grid gap-6 sm:grid-cols-2">
             <ImageField
@@ -133,7 +141,8 @@ export default function AdminConfigPage() {
         </AdminPanel>
 
         <div className="fixed inset-x-0 bottom-0 z-20 border-t border-[#e4e7ec] bg-white/95 backdrop-blur lg:left-[260px]">
-          <div className="mx-auto flex max-w-6xl justify-end px-4 py-3 sm:px-6 lg:px-10">
+          <div className="mx-auto flex max-w-6xl items-center justify-end gap-3 px-4 py-3 sm:px-6 lg:px-10">
+            {unsaved.dirty ? <span className="mr-auto hidden text-sm font-medium text-[#b54708] sm:inline">● Cambios sin guardar</span> : null}
             <button type="submit" disabled={saving} className={`${adminPrimaryButton} disabled:opacity-60`}>
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Guardar configuración
             </button>

@@ -7,6 +7,13 @@ import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 const iconButton = "grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-[#e4e7ec] text-[#667085] transition hover:bg-[#f6f7f9] disabled:opacity-30";
 const addButton = "inline-flex w-fit items-center gap-1.5 rounded-xl border border-dashed border-[#d4952a] px-4 py-2 text-sm font-semibold text-[#8a5a08] transition hover:bg-[#fdf6e7]";
 
+/** Ajusta el alto de un textarea a su contenido (los itinerarios suelen ser largos). */
+export function autoSize(element: HTMLTextAreaElement | null) {
+  if (!element) return;
+  element.style.height = "auto";
+  element.style.height = `${element.scrollHeight + 2}px`;
+}
+
 function move<T>(list: T[], index: number, delta: number) {
   const next = [...list];
   [next[index], next[index + delta]] = [next[index + delta], next[index]];
@@ -70,7 +77,7 @@ export function PairListField({
           {numbered ? <span className="mt-1.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#d4952a] text-xs font-bold text-[#021623]">{i + 1}</span> : null}
           <div className="grid min-w-0 flex-1 gap-2">
             <input value={item.title} maxLength={140} placeholder={titlePlaceholder} onChange={(e) => update(i, { title: e.target.value })} className="field font-semibold" />
-            <textarea value={item.text} rows={2} maxLength={2000} placeholder={textPlaceholder} onChange={(e) => update(i, { text: e.target.value })} className="field" />
+            <textarea ref={(element) => autoSize(element)} value={item.text} rows={3} maxLength={6000} placeholder={textPlaceholder} onChange={(e) => { autoSize(e.target); update(i, { text: e.target.value }); }} className="field resize-y leading-6" />
           </div>
           <RowActions index={i} length={items.length} onMove={(d) => setItems(move(items, i, d))} onRemove={() => setItems(items.filter((_, j) => j !== i))} />
         </div>
